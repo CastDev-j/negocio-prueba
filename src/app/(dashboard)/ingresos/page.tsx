@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -20,12 +20,7 @@ import { IncomeForm } from "@/components/income-form";
 import { ExportDataButton } from "@/components/export-data-button";
 import { useFinanceStore, type IncomeItem } from "@/lib/stores/finance-store";
 import { toast } from "sonner";
-import {
-  getCounter,
-  decrementCounter,
-  incrementCounter,
-  resetCounter,
-} from "@/app/actions/test/counter";
+
 
 export default function IncomesPage() {
   const { incomes, deleteIncome, getTotalIncomes } = useFinanceStore();
@@ -112,26 +107,6 @@ export default function IncomesPage() {
     },
   ];
 
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const fetchCounter = async () => {
-      const counter = await getCounter();
-      setCount(counter.value);
-    };
-    fetchCounter();
-  }, []);
-
-  const incrementCount = () => {
-    incrementCounter();
-  };
-  const decrementCount = () => {
-    decrementCounter();
-  };
-  const resetCount = () => {
-    resetCounter();
-  };
-
   return (
     <div className="container mx-auto py-6">
       <div className="mb-8">
@@ -140,27 +115,6 @@ export default function IncomesPage() {
           Registra y administra los ingresos de tu negocio
         </p>
 
-        <div className="flex items-center gap-4">
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            onClick={decrementCount}
-          >
-            Decrementar
-          </button>
-          <span className="text-xl font-bold">{count}</span>
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            onClick={incrementCount}
-          >
-            Incrementar
-          </button>
-          <button
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-            onClick={resetCount}
-          >
-            Resetear
-          </button>
-        </div>
       </div>
 
       <div className="gap-6 flex flex-col w-full">
