@@ -58,14 +58,16 @@ const menuItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { toggleSidebar, isMobile} = useSidebar();
+  const { toggleSidebar, isMobile } = useSidebar();
 
   return (
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-4 py-2">
-          <Package className="h-6 w-6" />
-          <span className="text-xl font-bold">FinanzaPyme</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Package className="size-6" />
+          </span>
+          <span className="font-bold text-xl">FinanzaPyme.</span>
         </div>
       </SidebarHeader>
       <SidebarContent>
