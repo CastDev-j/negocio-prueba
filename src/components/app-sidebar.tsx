@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
+import { useEffect } from "react";
 
 const menuItems = [
   {
@@ -81,15 +82,21 @@ const menuItems = [
 ];
 
 export function AppSidebar() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
+
+  useEffect(() => {
+    update();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const isUserLoggedIn = !!session?.user;
 
-  const userRole: "admin" | "user" | "public" = session?.user?.role === "admin"
-    ? "admin"
-    : session?.user
-    ? "user"
-    : "public";
+  const userRole: "admin" | "user" | "public" =
+    session?.user?.role === "admin"
+      ? "admin"
+      : session?.user
+      ? "user"
+      : "public";
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (item.security === "public") return true;
@@ -176,13 +183,15 @@ export function AppSidebar() {
                   </>
                 ) : (
                   <DropdownMenuItem>
-                    <Button
-                      variant="ghost"
-                      className="flex justify-start w-full"
-                    >
-                      <User2 className="mr-2 h-4 w-4" />
-                      <Link href={"/auth/login"}>Iniciar Sesión</Link>
-                    </Button>
+                    <Link href={"/auth/login"}>
+                      <Button
+                        variant="ghost"
+                        className="flex justify-start w-full"
+                      >
+                        <User2 className="mr-2 h-4 w-4" />
+                        <span>Iniciar Sesión</span>
+                      </Button>
+                    </Link>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>

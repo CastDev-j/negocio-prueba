@@ -4,7 +4,7 @@ import { prisma } from "@/prisma";
 import { User } from "../generated/prisma";
 import bcrypt from "bcryptjs";
 
-export const saveUser = async (user: User) => {
+export const saveGoogleUser = async (user: User) => {
   const existingUser = await prisma.user.findUnique({
     where: { email: user.email },
   });

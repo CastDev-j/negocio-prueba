@@ -11,6 +11,7 @@ export const getUserByEmail = async (email: string) => {
       email: true,
       image: true,
       role: true,
+      password: true,
     },
   });
 
