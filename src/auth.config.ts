@@ -1,7 +1,6 @@
 import type { NextAuthConfig } from "next-auth";
 import { NextResponse } from "next/server";
 
-
 const loginRoutes = ["/auth/login", "/auth/register", "/auth/recover"];
 const authRoutes = [
   "/costos",
