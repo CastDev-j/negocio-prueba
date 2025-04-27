@@ -18,6 +18,7 @@ import {
 } from "./ui/form";
 import { toast } from "sonner";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export function RegisterForm({
   className,
@@ -46,8 +47,7 @@ export function RegisterForm({
   }
 
   function onGoogleRegister() {
-    // Implement Google Register logic here
-    console.log("Google register clicked");
+    signIn("google");
   }
 
   const { isValid, isSubmitted } = form.formState;

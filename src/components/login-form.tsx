@@ -18,6 +18,7 @@ import {
 } from "./ui/form";
 import { toast } from "sonner";
 import Link from "next/link";
+import { signIn } from "next-auth/react";
 
 export function LoginForm({
   className,
@@ -43,10 +44,9 @@ export function LoginForm({
     }
   }
 
-  function onGoogleLogin() {
-    // Implement Google login logic here
-    console.log("Google login clicked");
-  }
+  const onGoogleLogin = () => {
+    signIn("google");
+  };
 
   const { isValid, isSubmitted } = form.formState;
 

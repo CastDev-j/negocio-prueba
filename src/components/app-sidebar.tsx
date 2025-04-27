@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
   ChevronUp,
   CreditCard,
   DollarSign,
+  DoorOpenIcon,
   Home,
   LineChart,
   Package,
@@ -32,6 +33,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Button } from "./ui/button";
 
 const menuItems = [
   {
@@ -83,13 +85,17 @@ export function AppSidebar() {
 
   const isUserLoggedIn = !!session?.user;
 
-  const userRole = session?.user?.role || "public";
+  const userRole: "admin" | "user" | "public" = session?.user?.role === "admin"
+    ? "admin"
+    : session?.user
+    ? "user"
+    : "public";
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (item.security === "public") return true;
     if (
-      (item.security === "user" && userRole === "admin") ||
-      userRole === "user"
+      item.security === "user" &&
+      (userRole === "admin" || userRole === "user")
     )
       return true;
     if (item.security === "admin" && userRole === "admin") return true;
@@ -149,18 +155,34 @@ export function AppSidebar() {
                 {isUserLoggedIn ? (
                   <>
                     <DropdownMenuItem>
-                      <User2 className="mr-2 h-4 w-4" />
-                      <span>Cuenta</span>
+                      <Button
+                        variant="ghost"
+                        className="flex justify-start w-full"
+                      >
+                        <User2 className="mr-2 h-4 w-4" />
+                        <span>Cuenta</span>
+                      </Button>
                     </DropdownMenuItem>
                     <DropdownMenuItem>
-                      <ChevronUp className="mr-2 h-4 w-4" />
-                      <span>Cerrar Sesión</span>
+                      <Button
+                        onClick={() => signOut()}
+                        variant="ghost"
+                        className="flex justify-start w-full"
+                      >
+                        <DoorOpenIcon className="mr-2 h-4 w-4" />
+                        <span>Cerrar Sesión</span>
+                      </Button>
                     </DropdownMenuItem>
                   </>
                 ) : (
                   <DropdownMenuItem>
-                    <User2 className="mr-2 h-4 w-4" />
-                    <Link href={"/auth/login"}>Iniciar Sesión</Link>
+                    <Button
+                      variant="ghost"
+                      className="flex justify-start w-full"
+                    >
+                      <User2 className="mr-2 h-4 w-4" />
+                      <Link href={"/auth/login"}>Iniciar Sesión</Link>
+                    </Button>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
