@@ -2,15 +2,15 @@ import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { getUserByEmail } from "./app/actions/getUserByEmail";
 import { User } from "./app/generated/prisma";
-import { saveGoogleUser } from "./app/actions/saveGoogleUser";
 import bcrypt from "bcryptjs";
 import {
   type LoginFormValues,
   type RegisterFormValues,
 } from "./lib/schemas/finance-schemas";
-import { saveCredentialUser } from "./app/actions/saveCredentialUser";
+import { saveCredentialUser } from "./app/actions/auth/saveCredentialUser";
+import { getUserByEmail } from "./app/actions/auth/getUserByEmail";
+import { saveGoogleUser } from "./app/actions/auth/saveGoogleUser";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
