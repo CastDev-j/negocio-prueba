@@ -61,12 +61,25 @@ export function RegisterForm({
     },
   });
 
-  async function onSubmit(values: RegisterFormValues) {
-    const credentials = await saveCredentialUser(values);
-
-    if (!credentials) return;
-
-    signIn("credentials", values);
+  function onSubmit(values: RegisterFormValues) {
+    saveCredentialUser(values).then((user) => {
+      if (!user) {
+        toast.error(
+          "Error al crear la cuenta. Por favor, inténtalo de nuevo.",
+          {
+            position: "top-right",
+          }
+        );
+        return;
+      }
+      toast.success("Cuenta creada con éxito. Iniciando sesión...", {
+        position: "top-right",
+      });
+      signIn("credentials", {
+        email: values.email,
+        password: values.password,
+      });
+    });
   }
 
   function onClickSubmit() {

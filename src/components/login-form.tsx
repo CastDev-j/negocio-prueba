@@ -58,7 +58,7 @@ export function LoginForm({
     },
   });
 
-  async function onSubmit(values: LoginFormValues) {
+  function onSubmit(values: LoginFormValues) {
     signIn("credentials", values);
   }
 
