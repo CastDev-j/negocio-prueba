@@ -99,7 +99,7 @@ export default function IncomesPage() {
         <p className="text-muted-foreground mt-2">Registra y administra los ingresos de tu negocio</p>
       </div>
 
-      <div className="grid gap-6">
+      <div className="gap-6 flex flex-col w-full">
         <Card>
           <CardHeader>
             <CardTitle>Resumen de Ingresos</CardTitle>

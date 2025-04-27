@@ -93,13 +93,13 @@ export default function CostsPage() {
   ]
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="flex flex-col mx-auto py-6 w-full">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Costos</h1>
         <p className="text-muted-foreground mt-2">Registra y administra los costos de producción de tu negocio</p>
       </div>
 
-      <div className="grid gap-6">
+      <div className="gap-6 flex flex-col w-full">
         <Card>
           <CardHeader>
             <CardTitle>Resumen de Costos</CardTitle>

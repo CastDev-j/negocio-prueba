@@ -97,7 +97,7 @@ export default function ExpensesPage() {
         </p>
       </div>
 
-      <div className="grid gap-6">
+      <div className="gap-6 flex flex-col w-full">
         <Card>
           <CardHeader>
             <CardTitle>Resumen de Gastos</CardTitle>
