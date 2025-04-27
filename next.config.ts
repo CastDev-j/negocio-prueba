@@ -1,7 +1,9 @@
-import type { NextConfig } from "next";
+import { withPrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
+import { NextConfig } from "next";
 
+/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   /* config options here */
 };
 
-export default nextConfig;
+export default withPrismaPlugin(nextConfig);
