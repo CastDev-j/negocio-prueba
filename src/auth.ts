@@ -5,23 +5,15 @@ import Credentials from "next-auth/providers/credentials";
 import { getUserByEmail } from "./app/actions/getUserByEmail";
 import { User } from "./app/generated/prisma";
 import { saveGoogleUser } from "./app/actions/saveGoogleUser";
-import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { type LoginFormValues } from "./lib/schemas/finance-schemas";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
       async authorize(credentials) {
-        const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
-
-        if (!parsedCredentials.success) {
-          return null;
-        }
-
-        const { email, password } = parsedCredentials.data;
+        const { email, password } = credentials as LoginFormValues;
 
         const user = await getUserByEmail(email.toLowerCase());
 

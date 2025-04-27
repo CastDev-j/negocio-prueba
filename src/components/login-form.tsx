@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { authErrorMessages, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FcGoogle } from "react-icons/fc";
@@ -19,11 +19,17 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { AlertCircle } from "lucide-react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const params = useSearchParams();
+  const error = params.get("error");
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -32,7 +38,7 @@ export function LoginForm({
     },
   });
 
-  function onSubmit(values: LoginFormValues) {
+  async function onSubmit(values: LoginFormValues) {
     signIn("credentials", values);
   }
 
@@ -107,6 +113,20 @@ export function LoginForm({
               )}
             />
           </div>
+
+          {error && (
+            <div className="grid gap-3">
+              <Alert variant={"destructive"}>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>¡Hubo un error!</AlertTitle>
+                <AlertDescription>
+                  {authErrorMessages[error] ||
+                    "Error desconocido. Por favor, inténtalo de nuevo."}
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
           <Button
             onClick={onClickSubmit}
             variant="default"
