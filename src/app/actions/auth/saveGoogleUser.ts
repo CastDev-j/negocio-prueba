@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/prisma";
-import { User } from "../generated/prisma";
+import { User } from "@/app/generated/prisma";
 import bcrypt from "bcryptjs";
 
 export const saveGoogleUser = async (user: User) => {
