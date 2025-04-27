@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,8 +29,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster richColors />
+          <SessionProvider>
+            {children}
+            <Toaster richColors />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>
