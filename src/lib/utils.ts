@@ -15,4 +15,6 @@ export const authErrorMessages: Record<string, string> = {
   EmailCreateAccount: "Error al crear cuenta, por favor intenta de nuevo.",
   EmailVerification:
     "Error al verificar el correo electrónico, por favor intenta de nuevo.",
+  EmailAlreadyExists:
+    "El correo electrónico ya está en uso, por favor intenta con otro.",
 };

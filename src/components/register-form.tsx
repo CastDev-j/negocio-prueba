@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { authErrorMessages, cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FcGoogle } from "react-icons/fc";
@@ -19,11 +19,18 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { saveCredentialUser } from "@/app/actions/saveCredentialUser";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { AlertCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+  const params = useSearchParams();
+  const error = params.get("error");
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -34,8 +41,12 @@ export function RegisterForm({
     },
   });
 
-  function onSubmit(values: RegisterFormValues) {
-    console.log(values);
+  async function onSubmit(values: RegisterFormValues) {
+    const credentials = await saveCredentialUser(values);
+
+    if (!credentials) return;
+
+    signIn("credentials", values);
   }
 
   function onClickSubmit() {
@@ -130,6 +141,18 @@ export function RegisterForm({
               )}
             />
           </div>
+          {error && (
+            <div className="grid gap-3">
+              <Alert variant={"destructive"}>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>¡Hubo un error!</AlertTitle>
+                <AlertDescription>
+                  {authErrorMessages[error] ||
+                    "Error desconocido. Por favor, inténtalo de nuevo."}
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
           <Button
             onClick={onClickSubmit}
             variant="default"
