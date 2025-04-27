@@ -11,7 +11,7 @@ export const saveCredentialUser = async (data: RegisterFormValues) => {
   });
 
   if (existingUser) {
-    return redirect("/register?error=EmailAlreadyExists");
+    return redirect("/auth/register?error=EmailAlreadyExists");
   }
 
   const newUser = await prisma.user.create({
@@ -24,7 +24,7 @@ export const saveCredentialUser = async (data: RegisterFormValues) => {
   });
 
   if (!newUser) {
-    return redirect("/register?error=default");
+    return redirect("/auth/register?error=default");
   }
 
   return newUser;
