@@ -34,7 +34,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { useEffect } from "react";
 
 const menuItems = [
   {
@@ -82,12 +81,9 @@ const menuItems = [
 ];
 
 export function AppSidebar() {
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    update();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
 
   const isUserLoggedIn = !!session?.user;
 

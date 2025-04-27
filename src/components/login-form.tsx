@@ -19,7 +19,6 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { authenticateCredentials } from "@/app/actions/authenticateCredentials";
 
 export function LoginForm({
   className,
@@ -34,17 +33,7 @@ export function LoginForm({
   });
 
   function onSubmit(values: LoginFormValues) {
-    authenticateCredentials(undefined, values).then((error) => {
-      if (error) {
-        toast.error(error, {
-          position: "top-right",
-        });
-      } else {
-        toast.success("Inicio de sesión exitoso", {
-          position: "top-right",
-        });
-      }
-    });
+    signIn("credentials", values);
   }
 
   function onClickSubmit() {
