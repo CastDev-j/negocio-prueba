@@ -6,9 +6,7 @@ import { User } from "./app/generated/prisma";
 import bcrypt from "bcryptjs";
 import {
   type LoginFormValues,
-  type RegisterFormValues,
 } from "./lib/schemas/finance-schemas";
-import { saveCredentialUser } from "./app/actions/auth/saveCredentialUser";
 import { getUserByEmail } from "./app/actions/auth/getUserByEmail";
 import { saveGoogleUser } from "./app/actions/auth/saveGoogleUser";
 
@@ -17,21 +15,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
-        const { confirmPassword, name } = credentials as RegisterFormValues;
         const { email, password } = credentials as LoginFormValues;
-
-        if (confirmPassword && name) {
-          const userToSave: RegisterFormValues = {
-            email: email.toLowerCase(),
-            password,
-            confirmPassword,
-            name,
-          };
-
-          const newUser = await saveCredentialUser(userToSave);
-
-          return newUser;
-        }
 
         const user = await getUserByEmail(email.toLowerCase());
 

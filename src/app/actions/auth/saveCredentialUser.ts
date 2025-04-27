@@ -3,6 +3,7 @@
 import { prisma } from "@/prisma";
 import bcrypt from "bcryptjs";
 import { RegisterFormValues } from "@/lib/schemas/finance-schemas";
+import { redirect } from "next/navigation";
 
 export const saveCredentialUser = async (data: RegisterFormValues) => {
   const existingUser = await prisma.user.findUnique({
@@ -10,7 +11,7 @@ export const saveCredentialUser = async (data: RegisterFormValues) => {
   });
 
   if (existingUser) {
-    return null;
+    return redirect("/register?error=EmailAlreadyExists");
   }
 
   const newUser = await prisma.user.create({
@@ -23,7 +24,7 @@ export const saveCredentialUser = async (data: RegisterFormValues) => {
   });
 
   if (!newUser) {
-    return null;
+    return redirect("/register?error=default");
   }
 
   return newUser;

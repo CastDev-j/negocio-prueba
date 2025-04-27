@@ -23,6 +23,7 @@ import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { saveCredentialUser } from "@/app/actions/auth/saveCredentialUser";
 
 function Search() {
   const params = useSearchParams();
@@ -61,7 +62,15 @@ export function RegisterForm({
   });
 
   async function onSubmit(values: RegisterFormValues) {
-    signIn("credentials", values);
+    const createdUser = await saveCredentialUser(values);
+
+    if (!createdUser) return;
+    
+
+    signIn("credentials", {
+      email: createdUser.email,
+      password: values.password,
+    });
   }
 
   function onClickSubmit() {
