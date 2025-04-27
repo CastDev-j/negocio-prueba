@@ -17,6 +17,12 @@ const userData: Prisma.UserCreateInput[] = [
   },
 ];
 
+const counterData: Prisma.CounterCreateInput[] = [
+  {
+    value: 0,
+  },
+];
+
 export async function main() {
   if (process.env.NODE_ENV === "production") {
     throw new Error("You are trying to seed the production database.");
@@ -24,6 +30,7 @@ export async function main() {
 
   try {
     await prisma.user.deleteMany();
+    await prisma.counter.deleteMany();
   } catch (error) {
     console.error("Error seeding database:", error);
   }
@@ -31,6 +38,11 @@ export async function main() {
   for (const u of userData) {
     await prisma.user.create({ data: u });
   }
+
+  for (const c of counterData) {
+    await prisma.counter.create({ data: c });
+  }
+
 }
 
 main();

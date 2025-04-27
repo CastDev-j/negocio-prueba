@@ -25,3 +25,8 @@ model User {
 
   @@index([email])
 }
+
+model Counter {
+  id    String @id @default(uuid())
+  value Int    @default(0)
+}
