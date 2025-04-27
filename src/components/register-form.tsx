@@ -150,7 +150,7 @@ export function RegisterForm({
             className="w-full"
           >
             <FcGoogle />
-            Iniciar sesión con Google
+            Registrarse con Google
           </Button>
         </div>
         <div className="text-center text-sm">
