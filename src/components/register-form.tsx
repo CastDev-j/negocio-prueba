@@ -23,14 +23,34 @@ import { saveCredentialUser } from "@/app/actions/saveCredentialUser";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+
+function Search() {
+  const params = useSearchParams();
+  const error = params.get("error");
+
+  return (
+    <>
+      {error && (
+        <div className="grid gap-3">
+          <Alert variant={"destructive"}>
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>¡Hubo un error!</AlertTitle>
+            <AlertDescription>
+              {authErrorMessages[error] ||
+                "Error desconocido. Por favor, inténtalo de nuevo."}
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
+    </>
+  );
+}
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
-  const params = useSearchParams();
-  const error = params.get("error");
-
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
@@ -141,18 +161,11 @@ export function RegisterForm({
               )}
             />
           </div>
-          {error && (
-            <div className="grid gap-3">
-              <Alert variant={"destructive"}>
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>¡Hubo un error!</AlertTitle>
-                <AlertDescription>
-                  {authErrorMessages[error] ||
-                    "Error desconocido. Por favor, inténtalo de nuevo."}
-                </AlertDescription>
-              </Alert>
-            </div>
-          )}
+
+          <Suspense>
+            <Search />
+          </Suspense>
+
           <Button
             onClick={onClickSubmit}
             variant="default"
