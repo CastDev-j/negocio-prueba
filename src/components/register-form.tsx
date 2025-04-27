@@ -19,7 +19,6 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { saveCredentialUser } from "@/app/actions/saveCredentialUser";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -61,25 +60,8 @@ export function RegisterForm({
     },
   });
 
-  function onSubmit(values: RegisterFormValues) {
-    saveCredentialUser(values).then((user) => {
-      if (!user) {
-        toast.error(
-          "Error al crear la cuenta. Por favor, inténtalo de nuevo.",
-          {
-            position: "top-right",
-          }
-        );
-        return;
-      }
-      toast.success("Cuenta creada con éxito. Iniciando sesión...", {
-        position: "top-right",
-      });
-      signIn("credentials", {
-        email: values.email,
-        password: values.password,
-      });
-    });
+  async function onSubmit(values: RegisterFormValues) {
+    signIn("credentials", values);
   }
 
   function onClickSubmit() {
