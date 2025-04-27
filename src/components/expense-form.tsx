@@ -52,7 +52,7 @@ export function ExpenseForm() {
 
   function onSubmit(values: ExpenseFormValues) {
     addExpense(values);
-    toast("Gasto registrado", {
+    toast.success("Gasto registrado", {
       description: "El gasto ha sido registrado correctamente.",
       position: "top-right",
 

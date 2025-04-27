@@ -46,7 +46,7 @@ export function IncomeForm() {
 
   function onSubmit(values: IncomeFormValues) {
     addIncome(values);
-    toast("Ingreso registrado", {
+    toast.success("Ingreso registrado", {
       description: "El ingreso ha sido registrado correctamente.",
       position: "top-right",
     });
