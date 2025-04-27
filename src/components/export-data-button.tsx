@@ -1,35 +1,42 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Download } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useFinanceStore } from "@/lib/stores/finance-store"
-import { useToast } from "@/hooks/use-toast"
+import { useState } from "react";
+import { Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useFinanceStore } from "@/lib/stores/finance-store";
+import { toast } from "sonner";
 
-type ExportType = "incomes" | "costs" | "expenses" | "all"
+type ExportType = "incomes" | "costs" | "expenses" | "all";
 
 export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
-  const [isExporting, setIsExporting] = useState(false)
-  const { toast } = useToast()
-  const { incomes, costs, expenses } = useFinanceStore()
+  const [isExporting, setIsExporting] = useState(false);
+  const { incomes, costs, expenses } = useFinanceStore();
 
   const exportToCSV = () => {
-    setIsExporting(true)
+    setIsExporting(true);
 
     try {
-      let data: any[] = []
-      let filename = ""
-      let headers = ""
+      let data: {
+        type: string;
+        date: string;
+        concept: string;
+        quantity: number;
+        price: number;
+        total: number;
+      }[] = [];
+      let filename = "";
+      let headers = "";
 
       if (type === "incomes" || type === "all") {
         const incomeData = incomes.map((income) => ({
           ...income,
           date: new Date(income.date).toLocaleDateString(),
           type: "Ingreso",
-        }))
-        data = [...data, ...incomeData]
-        filename = type === "incomes" ? "ingresos.csv" : "datos_financieros.csv"
-        headers = "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n"
+        }));
+        data = [...data, ...incomeData];
+        filename =
+          type === "incomes" ? "ingresos.csv" : "datos_financieros.csv";
+        headers = "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";
       }
 
       if (type === "costs" || type === "all") {
@@ -37,10 +44,11 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
           ...cost,
           date: new Date(cost.date).toLocaleDateString(),
           type: "Costo",
-        }))
-        data = [...data, ...costData]
-        filename = type === "costs" ? "costos.csv" : filename || "datos_financieros.csv"
-        headers = headers || "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n"
+        }));
+        data = [...data, ...costData];
+        filename =
+          type === "costs" ? "costos.csv" : filename || "datos_financieros.csv";
+        headers = headers || "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";
       }
 
       if (type === "expenses" || type === "all") {
@@ -51,51 +59,65 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
           quantity: 1,
           price: expense.amount,
           total: expense.amount,
-        }))
-        data = [...data, ...expenseData]
-        filename = type === "expenses" ? "gastos.csv" : filename || "datos_financieros.csv"
-        headers = headers || "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n"
+        }));
+        data = [...data, ...expenseData];
+        filename =
+          type === "expenses"
+            ? "gastos.csv"
+            : filename || "datos_financieros.csv";
+        headers = headers || "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";
       }
 
       // Crear el contenido del CSV
-      let csvContent = headers
+      let csvContent = headers;
 
       data.forEach((item) => {
-        const row = [item.type, item.date, item.concept, item.quantity, item.price, item.total].join(",")
-        csvContent += row + "\n"
-      })
+        const row = [
+          item.type,
+          item.date,
+          item.concept,
+          item.quantity,
+          item.price,
+          item.total,
+        ].join(",");
+        csvContent += row + "\n";
+      });
 
       // Crear y descargar el archivo
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement("a")
-      link.setAttribute("href", url)
-      link.setAttribute("download", filename)
-      link.style.visibility = "hidden"
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-      toast({
-        title: "Datos exportados",
+      toast.success("Datos exportados", {
         description: `Los datos han sido exportados a ${filename}`,
-      })
+        position: "top-right",
+      });
     } catch (error) {
-      toast({
-        title: "Error al exportar",
+      toast.error("Error al exportar", {
         description: "Ha ocurrido un error al exportar los datos.",
-        variant: "destructive",
-      })
-      console.error("Error al exportar datos:", error)
+        position: "top-right",
+      });
+      console.error("Error al exportar datos:", error);
     } finally {
-      setIsExporting(false)
+      setIsExporting(false);
     }
-  }
+  };
 
   return (
-    <Button variant="outline" size="sm" onClick={exportToCSV} disabled={isExporting}>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={exportToCSV}
+      disabled={isExporting}
+    >
       <Download className="mr-2 h-4 w-4" />
       Exportar a CSV
     </Button>
-  )
+  );
 }

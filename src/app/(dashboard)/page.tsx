@@ -88,7 +88,7 @@ export default function Home() {
               <ol className="list-decimal list-inside space-y-2">
                 <li>Navega a la sección correspondiente desde el menú lateral.</li>
                 <li>Completa el formulario con la información requerida.</li>
-                <li>Haz clic en el botón "Registrar" para guardar los datos.</li>
+                <li>Haz clic en el botón &quot;Registrar&quot; para guardar los datos.</li>
                 <li>Verifica que los datos aparezcan en la tabla correspondiente.</li>
               </ol>
             </CardContent>

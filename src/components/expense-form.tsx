@@ -1,25 +1,44 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
-import { useFinanceStore } from "@/lib/stores/finance-store"
-import { type ExpenseFormValues, expenseFormSchema } from "@/lib/schemas/finance-schemas"
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { useFinanceStore } from "@/lib/stores/finance-store";
+import {
+  type ExpenseFormValues,
+  expenseFormSchema,
+} from "@/lib/schemas/finance-schemas";
+import { toast } from "sonner";
 
 export function ExpenseForm() {
-  const { toast } = useToast()
-  const addExpense = useFinanceStore((state) => state.addExpense)
+  const addExpense = useFinanceStore((state) => state.addExpense);
 
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseFormSchema),
@@ -29,20 +48,21 @@ export function ExpenseForm() {
       category: "operativo",
       amount: 0,
     },
-  })
+  });
 
   function onSubmit(values: ExpenseFormValues) {
-    addExpense(values)
-    toast({
-      title: "Gasto registrado",
+    addExpense(values);
+    toast("Gasto registrado", {
       description: "El gasto ha sido registrado correctamente.",
-    })
+      position: "top-right",
+
+    });
     form.reset({
       date: new Date(),
       concept: "",
       category: "operativo",
       amount: 0,
-    })
+    });
   }
 
   return (
@@ -60,9 +80,16 @@ export function ExpenseForm() {
                     <FormControl>
                       <Button
                         variant={"outline"}
-                        className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
                       >
-                        {field.value ? format(field.value, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                        {field.value ? (
+                          format(field.value, "PPP", { locale: es })
+                        ) : (
+                          <span>Seleccionar fecha</span>
+                        )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -72,7 +99,9 @@ export function ExpenseForm() {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -102,7 +131,10 @@ export function ExpenseForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Categoría</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Seleccionar categoría" />
@@ -138,5 +170,5 @@ export function ExpenseForm() {
         </Button>
       </form>
     </Form>
-  )
+  );
 }

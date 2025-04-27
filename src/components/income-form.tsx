@@ -1,24 +1,38 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
-import { useToast } from "@/hooks/use-toast"
-import { useFinanceStore } from "@/lib/stores/finance-store"
-import { type IncomeFormValues, incomeFormSchema } from "@/lib/schemas/finance-schemas"
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { useFinanceStore } from "@/lib/stores/finance-store";
+import {
+  type IncomeFormValues,
+  incomeFormSchema,
+} from "@/lib/schemas/finance-schemas";
+import { toast } from "sonner";
 
 export function IncomeForm() {
-  const { toast } = useToast()
-  const addIncome = useFinanceStore((state) => state.addIncome)
+  const addIncome = useFinanceStore((state) => state.addIncome);
 
   const form = useForm<IncomeFormValues>({
     resolver: zodResolver(incomeFormSchema),
@@ -28,20 +42,20 @@ export function IncomeForm() {
       quantity: 0,
       price: 0,
     },
-  })
+  });
 
   function onSubmit(values: IncomeFormValues) {
-    addIncome(values)
-    toast({
-      title: "Ingreso registrado",
+    addIncome(values);
+    toast("Ingreso registrado", {
       description: "El ingreso ha sido registrado correctamente.",
-    })
+      position: "top-right",
+    });
     form.reset({
       date: new Date(),
       concept: "",
       quantity: 0,
       price: 0,
-    })
+    });
   }
 
   return (
@@ -59,9 +73,16 @@ export function IncomeForm() {
                     <FormControl>
                       <Button
                         variant={"outline"}
-                        className={cn("w-full pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
                       >
-                        {field.value ? format(field.value, "PPP", { locale: es }) : <span>Seleccionar fecha</span>}
+                        {field.value ? (
+                          format(field.value, "PPP", { locale: es })
+                        ) : (
+                          <span>Seleccionar fecha</span>
+                        )}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -71,7 +92,9 @@ export function IncomeForm() {
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
                       initialFocus
                     />
                   </PopoverContent>
@@ -118,7 +141,10 @@ export function IncomeForm() {
                 <FormControl>
                   <Input type="number" min="0" step="0.01" {...field} />
                 </FormControl>
-                <FormDescription>Total: ${(form.watch("quantity") * form.watch("price")).toFixed(2)}</FormDescription>
+                <FormDescription>
+                  Total: $
+                  {(form.watch("quantity") * form.watch("price")).toFixed(2)}
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -130,5 +156,5 @@ export function IncomeForm() {
         </Button>
       </form>
     </Form>
-  )
+  );
 }

@@ -13,10 +13,9 @@ import { DataTable } from "@/components/ui/data-table"
 import { IncomeForm } from "@/components/income-form"
 import { ExportDataButton } from "@/components/export-data-button"
 import { useFinanceStore, type IncomeItem } from "@/lib/stores/finance-store"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 export default function IncomesPage() {
-  const { toast } = useToast()
   const { incomes, deleteIncome, getTotalIncomes } = useFinanceStore()
   const [activeTab, setActiveTab] = useState("registro")
 
@@ -79,9 +78,10 @@ export default function IncomesPage() {
             size="icon"
             onClick={() => {
               deleteIncome(income.id)
-              toast({
-                title: "Ingreso eliminado",
+              toast.success("Ingreso eliminado", {
                 description: "El ingreso ha sido eliminado correctamente.",
+                position: "top-right",
+
               })
             }}
           >

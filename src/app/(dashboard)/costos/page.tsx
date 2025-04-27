@@ -13,10 +13,9 @@ import { DataTable } from "@/components/ui/data-table"
 import { CostForm } from "@/components/cost-form"
 import { ExportDataButton } from "@/components/export-data-button"
 import { useFinanceStore, type CostItem } from "@/lib/stores/finance-store"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 
 export default function CostsPage() {
-  const { toast } = useToast()
   const { costs, deleteCost, getTotalCosts } = useFinanceStore()
   const [activeTab, setActiveTab] = useState("registro")
 
@@ -79,9 +78,10 @@ export default function CostsPage() {
             size="icon"
             onClick={() => {
               deleteCost(cost.id)
-              toast({
-                title: "Costo eliminado",
+              toast.success("Costo eliminado", {
                 description: "El costo ha sido eliminado correctamente.",
+                position: "top-right",
+
               })
             }}
           >
