@@ -22,8 +22,9 @@ import { signIn } from "next-auth/react";
 import { saveCredentialUser } from "@/app/actions/saveCredentialUser";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { getUserByEmail } from "@/app/actions/getUserByEmail";
 
 function Search() {
   const params = useSearchParams();
@@ -62,6 +63,12 @@ export function RegisterForm({
   });
 
   async function onSubmit(values: RegisterFormValues) {
+    const userExists = await getUserByEmail(values.email.toLowerCase());
+
+    if (userExists) {
+      return redirect("/auth/register?error=EmailAlreadyExists");
+    }
+
     const credentials = await saveCredentialUser(values);
 
     if (!credentials) return;
