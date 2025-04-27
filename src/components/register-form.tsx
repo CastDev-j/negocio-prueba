@@ -45,6 +45,11 @@ export function RegisterForm({
     }
   }
 
+  function onGoogleLogin() {
+    // Implement Google login logic here
+    console.log("Google login clicked");
+  }
+
   const { isValid, isSubmitted } = form.formState;
 
   return (
@@ -138,9 +143,14 @@ export function RegisterForm({
               O regístrate con
             </span>
           </div>
-          <Button type="submit" variant="outline" className="w-full">
+          <Button
+            onClick={onGoogleLogin}
+            type="button"
+            variant="outline"
+            className="w-full"
+          >
             <FcGoogle />
-            Registrarse con Google
+            Iniciar sesión con Google
           </Button>
         </div>
         <div className="text-center text-sm">

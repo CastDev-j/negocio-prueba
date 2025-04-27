@@ -43,6 +43,11 @@ export function LoginForm({
     }
   }
 
+  function onGoogleLogin() {
+    // Implement Google login logic here
+    console.log("Google login clicked");
+  }
+
   const { isValid, isSubmitted } = form.formState;
 
   return (
@@ -115,7 +120,12 @@ export function LoginForm({
               O continúa con
             </span>
           </div>
-          <Button type="submit" variant="outline" className="w-full">
+          <Button
+            onClick={onGoogleLogin}
+            type="button"
+            variant="outline"
+            className="w-full"
+          >
             <FcGoogle />
             Iniciar sesión con Google
           </Button>
