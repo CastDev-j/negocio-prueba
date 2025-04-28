@@ -18,9 +18,7 @@ export default async function CostsPage() {
         </p>
       </div>
 
-      <div className="gap-6 flex flex-col w-full">
-        <CostsComponent costs={costs} />
-      </div>
+      <CostsComponent costs={costs} />
     </div>
   );
 }

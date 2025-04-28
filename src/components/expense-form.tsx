@@ -30,16 +30,14 @@ import {
 } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { useFinanceStore } from "@/lib/stores/finance-store";
 import {
   type ExpenseFormValues,
   expenseFormSchema,
 } from "@/lib/schemas/finance-schemas";
 import { toast } from "sonner";
+import { addExpense } from "@/app/actions/expences/expences";
 
 export function ExpenseForm() {
-  const addExpense = useFinanceStore((state) => state.addExpense);
-
   const form = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseFormSchema),
     defaultValues: {
@@ -50,12 +48,20 @@ export function ExpenseForm() {
     },
   });
 
-  function onSubmit(values: ExpenseFormValues) {
-    addExpense(values);
+  async function onSubmit(values: ExpenseFormValues) {
+    const expenseCreater = await addExpense(values);
+
+    if (!expenseCreater) {
+      toast.error("Error al registrar el gasto", {
+        description: "No se pudo registrar el gasto. Intenta nuevamente.",
+        position: "top-right",
+      });
+      return;
+    }
+
     toast.success("Gasto registrado", {
       description: "El gasto ha sido registrado correctamente.",
       position: "top-right",
-
     });
     form.reset({
       date: new Date(),
@@ -165,7 +171,11 @@ export function ExpenseForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button
+          disabled={form.formState.isSubmitting}
+          type="submit"
+          className="w-full"
+        >
           Registrar gasto
         </Button>
       </form>
