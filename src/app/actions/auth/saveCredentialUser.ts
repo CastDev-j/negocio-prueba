@@ -3,9 +3,7 @@
 import bcrypt from "bcryptjs";
 import { RegisterFormValues } from "@/lib/schemas/finance-schemas";
 import { redirect } from "next/navigation";
-import { PrismaClient } from "@/app/generated/prisma";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/prisma";
 
 export const saveCredentialUser = async (data: RegisterFormValues) => {
   const existingUser = await prisma.user.findUnique({
