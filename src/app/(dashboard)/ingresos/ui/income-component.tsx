@@ -18,9 +18,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/ui/data-table";
 import { IncomeForm } from "@/components/income-form";
 import { ExportDataButton } from "@/components/export-data-button";
-import { type IncomeItem } from "@/lib/stores/finance-store";
 import { toast } from "sonner";
 import { deleteIncome } from "@/app/actions/expences/incomes";
+import { IncomeItem } from "@/interfaces/store";
 
 interface IncomeComponentProps {
   incomes: IncomeItem[];

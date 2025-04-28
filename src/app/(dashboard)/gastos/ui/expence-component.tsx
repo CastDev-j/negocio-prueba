@@ -18,10 +18,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/ui/data-table";
 import { ExpenseForm } from "@/components/expense-form";
 import { ExportDataButton } from "@/components/export-data-button";
-import { type ExpenseItem } from "@/lib/stores/finance-store";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { deleteExpense } from "@/app/actions/expences/expences";
+import { ExpenseItem } from "@/interfaces/store";
 
 interface ExpensesComponentProps {
   expenses: ExpenseItem[];
