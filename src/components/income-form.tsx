@@ -24,16 +24,14 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { useFinanceStore } from "@/lib/stores/finance-store";
 import {
   type IncomeFormValues,
   incomeFormSchema,
 } from "@/lib/schemas/finance-schemas";
 import { toast } from "sonner";
+import { addIncome } from "@/app/actions/expences/incomes";
 
 export function IncomeForm() {
-  const addIncome = useFinanceStore((state) => state.addIncome);
-
   const form = useForm<IncomeFormValues>({
     resolver: zodResolver(incomeFormSchema),
     defaultValues: {
@@ -44,8 +42,17 @@ export function IncomeForm() {
     },
   });
 
-  function onSubmit(values: IncomeFormValues) {
-    addIncome(values);
+  async function onSubmit(values: IncomeFormValues) {
+    const incomeCreated = await addIncome(values);
+
+    if (!incomeCreated) {
+      toast.error("Error al registrar el ingreso", {
+        description: "No se pudo registrar el ingreso. Intenta nuevamente.",
+        position: "top-right",
+      });
+      return;
+    }
+
     toast.success("Ingreso registrado", {
       description: "El ingreso ha sido registrado correctamente.",
       position: "top-right",
@@ -151,7 +158,11 @@ export function IncomeForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full">
+        <Button
+          disabled={form.formState.isSubmitting}
+          type="submit"
+          className="w-full"
+        >
           Registrar ingreso
         </Button>
       </form>
