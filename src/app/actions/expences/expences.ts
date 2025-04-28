@@ -8,6 +8,49 @@ import { PrismaClient } from "@/app/generated/prisma";
 
 const prisma = new PrismaClient();
 
+export const getAdminExpenses = async () => {
+  const session = await auth();
+  if (!session) throw new Error("User not authenticated");
+  const { user } = session;
+  const { role } = user;
+
+  if (role !== "admin") throw new Error("User not authenticated");
+
+  const expenses = await prisma.expense.findMany({
+    orderBy: { date: "desc" },
+  });
+
+  return expenses.map((expense) => {
+    return {
+      ...expense,
+      date: expense.date.toISOString().split("T")[0],
+    };
+  });
+};
+
+export const getExpense = async () => {
+  const session = await auth();
+  if (!session) throw new Error("User not authenticated");
+  const { user } = session;
+  const { email } = user;
+
+  const userId = await getUserIdByEmail(email);
+
+  if (!userId) throw new Error("User not authenticated");
+
+  const expences = await prisma.expense.findMany({
+    where: { userId },
+    orderBy: { date: "desc" },
+  });
+
+  return expences.map((expence) => {
+    return {
+      ...expence,
+      date: expence.date.toISOString().split("T")[0],
+    };
+  });
+};
+
 export const addExpense = async (
   expenseData: ExpenseInput
 ): Promise<PrismaExpense> => {
@@ -25,7 +68,9 @@ export const addExpense = async (
       ...expenseData,
       date: expenseData.date,
       userId,
-      category: expenseData.category.toLowerCase() as "operativo" | "financiero",
+      category: expenseData.category.toLowerCase() as
+        | "operativo"
+        | "financiero",
     },
   });
 };
