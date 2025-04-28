@@ -14,7 +14,6 @@ import { CostForm } from "@/components/cost-form"
 import { ExportDataButton } from "@/components/export-data-button"
 import { useFinanceStore, type CostItem } from "@/lib/stores/finance-store"
 import { toast } from "sonner"
-import { addCost } from "@/app/actions/expences/costs"
 
 export default function CostsPage() {
   const { costs, deleteCost, getTotalCosts } = useFinanceStore()
@@ -97,18 +96,6 @@ export default function CostsPage() {
     <div className="flex flex-col mx-auto py-6 w-full">
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Costos</h1>
-        <button
-          onClick={async () => {
-            await addCost({
-              concept: "Compra de insumos",
-              date: new Date(),
-              quantity: 10,
-              price: 100,
-            });
-          }}
-        >
-          addcost
-        </button>
         <p className="text-muted-foreground mt-2">Registra y administra los costos de producción de tu negocio</p>
       </div>
 
