@@ -13,15 +13,71 @@ enum Role {
   user
 }
 
+enum ExpenseCategory {
+  operativo
+  financiero
+}
+
 model User {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String    @unique
   password  String
   image     String?
-  role      Role     @default(user)
+  role      Role      @default(user)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Income    Income[]
+  Cost      Cost[]
+  Expense   Expense[]
+
+  @@index([email])
+}
+
+model Income {
+  id        String   @id @default(uuid())
+  date      DateTime
+  concept   String
+  quantity  Float
+  price     Float
+  total     Float
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([email])
+  @@index([userId])
+  @@index([date])
+}
+
+model Cost {
+  id        String   @id @default(uuid())
+  date      DateTime
+  concept   String
+  quantity  Float
+  price     Float
+  total     Float
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([date])
+}
+
+model Expense {
+  id        String          @id @default(uuid())
+  date      DateTime
+  concept   String
+  category  ExpenseCategory
+  amount    Float
+  userId    String
+  user      User            @relation(fields: [userId], references: [id])
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([date])
+  @@index([category])
 }

@@ -4,9 +4,7 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { User } from "./app/generated/prisma";
 import bcrypt from "bcryptjs";
-import {
-  type LoginFormValues,
-} from "./lib/schemas/finance-schemas";
+import { type LoginFormValues } from "./lib/schemas/finance-schemas";
 import { getUserByEmail } from "./app/actions/auth/getUserByEmail";
 import { saveGoogleUser } from "./app/actions/auth/saveGoogleUser";
 
@@ -40,6 +38,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         if (existingUser) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { password, ...userWithoutPassword } = existingUser;
+
           return userWithoutPassword;
         }
 

@@ -83,8 +83,6 @@ const menuItems = [
 export function AppSidebar() {
   const { data: session } = useSession();
 
-
-
   const isUserLoggedIn = !!session?.user;
 
   const userRole: "admin" | "user" | "public" =
