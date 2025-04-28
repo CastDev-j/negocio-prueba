@@ -1,6 +1,6 @@
 import { getExpense } from "@/app/actions/expences/expences";
 import { ExpensesComponent } from "./ui/expence-component";
-import { type ExpenseItem } from "@/lib/stores/finance-store";
+import { ExpenseItem } from "@/interfaces/store";
 
 export default async function ExpensesPage() {
   const expenses: ExpenseItem[] =
