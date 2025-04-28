@@ -3,16 +3,17 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useFinanceStore } from "@/lib/stores/finance-store";
 import { toast } from "sonner";
+import { getCosts } from "@/app/actions/expences/costs";
+import { getExpense } from "@/app/actions/expences/expences";
+import { getIncome } from "@/app/actions/expences/incomes";
 
 type ExportType = "incomes" | "costs" | "expenses" | "all";
 
 export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
   const [isExporting, setIsExporting] = useState(false);
-  const { incomes, costs, expenses } = useFinanceStore();
 
-  const exportToCSV = () => {
+  const exportToCSV = async () => {
     setIsExporting(true);
 
     try {
@@ -28,7 +29,7 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       let headers = "";
 
       if (type === "incomes" || type === "all") {
-        const incomeData = incomes.map((income) => ({
+        const incomeData = ((await getIncome()) || []).map((income) => ({
           ...income,
           date: new Date(income.date).toLocaleDateString(),
           type: "Ingreso",
@@ -40,7 +41,7 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       }
 
       if (type === "costs" || type === "all") {
-        const costData = costs.map((cost) => ({
+        const costData = ((await getCosts()) || []).map((cost) => ({
           ...cost,
           date: new Date(cost.date).toLocaleDateString(),
           type: "Costo",
@@ -52,7 +53,7 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       }
 
       if (type === "expenses" || type === "all") {
-        const expenseData = expenses.map((expense) => ({
+        const expenseData = ((await getExpense()) || []).map((expense) => ({
           ...expense,
           date: new Date(expense.date).toLocaleDateString(),
           type: "Gasto",
@@ -113,7 +114,9 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
     <Button
       variant="outline"
       size="sm"
-      onClick={exportToCSV}
+      onClick={async () => {
+        await exportToCSV();
+      }}
       disabled={isExporting}
     >
       <Download className="mr-2 h-4 w-4" />

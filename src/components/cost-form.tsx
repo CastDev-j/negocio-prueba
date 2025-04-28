@@ -24,16 +24,14 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { useFinanceStore } from "@/lib/stores/finance-store";
 import {
   type CostFormValues,
   costFormSchema,
 } from "@/lib/schemas/finance-schemas";
 import { toast } from "sonner";
+import { addCost } from "@/app/actions/expences/costs";
 
 export function CostForm() {
-  const addCost = useFinanceStore((state) => state.addCost);
-
   const form = useForm<CostFormValues>({
     resolver: zodResolver(costFormSchema),
     defaultValues: {
@@ -44,12 +42,20 @@ export function CostForm() {
     },
   });
 
-  function onSubmit(values: CostFormValues) {
-    addCost(values);
+  async function onSubmit(values: CostFormValues) {
+    const addedCost = await addCost(values);
+
+    if (!addedCost) {
+      toast.error("Error al registrar el costo", {
+        description: "No se pudo registrar el costo. Intenta nuevamente.",
+        position: "top-right",
+      });
+      return;
+    }
+
     toast.success("Costo registrado", {
       description: "El costo ha sido registrado correctamente.",
       position: "top-right",
-
     });
     form.reset({
       date: new Date(),
