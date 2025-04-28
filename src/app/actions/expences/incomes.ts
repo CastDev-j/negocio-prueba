@@ -76,6 +76,8 @@ export const addIncome = async (
 
   revalidatePath("/ingresos");
   revalidatePath("/admin/ingresos");
+  revalidatePath("/estado-resultados");
+  revalidatePath("/flujo-caja");
 
   return incomeCreated;
 };
@@ -95,6 +97,8 @@ export const deleteIncome = async (id: string): Promise<PrismaIncome> => {
 
   revalidatePath("/ingresos");
   revalidatePath("/admin/ingresos");
+  revalidatePath("/estado-resultados");
+  revalidatePath("/flujo-caja");
 
   return incomeDeleted;
 };

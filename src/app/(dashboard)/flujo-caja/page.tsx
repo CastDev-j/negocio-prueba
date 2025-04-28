@@ -1,49 +1,113 @@
-"use client";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useFinanceStore } from "@/lib/stores/finance-store";
 import { ExportDataButton } from "@/components/export-data-button";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { FlowComponent } from "./ui/flow-component";
+import { CostItem, ExpenseItem, IncomeItem } from "@/interfaces/store";
+import { getIncome } from "@/app/actions/expences/incomes";
+import { getCosts } from "@/app/actions/expences/costs";
+import { getExpense } from "@/app/actions/expences/expences";
+import { CashFlowData } from "@/interfaces/flow";
 
-export default function CashFlowPage() {
-  const { getCashFlow } = useFinanceStore();
+export default async function CashFlowPage() {
+  const incomes: IncomeItem[] = ((await getIncome()) || []).map((income) => ({
+    ...income,
+    date: new Date(income.date),
+  }));
 
-  const cashFlowData = getCashFlow();
+  const costs: CostItem[] = ((await getCosts()) || []).map((cost) => ({
+    ...cost,
+    date: new Date(cost.date),
+  }));
 
-  // Si no hay datos, crear datos de ejemplo
-  const mockData =
+  const expenses: ExpenseItem[] = ((await getExpense()) || []).map(
+    (expense) => ({
+      ...expense,
+      date: new Date(expense.date),
+    })
+  );
+
+  const dateMap = new Map<
+    string,
+    { incomes: number; costs: number; expenses: number; date: Date }
+  >();
+
+  incomes.forEach((income) => {
+    const dateStr = income.date.toISOString().split("T")[0];
+    if (!dateMap.has(dateStr)) {
+      dateMap.set(dateStr, {
+        incomes: 0,
+        costs: 0,
+        expenses: 0,
+        date: new Date(dateStr),
+      });
+    }
+    dateMap.get(dateStr)!.incomes += income.total;
+  });
+
+  costs.forEach((cost) => {
+    const dateStr = cost.date.toISOString().split("T")[0];
+    if (!dateMap.has(dateStr)) {
+      dateMap.set(dateStr, {
+        incomes: 0,
+        costs: 0,
+        expenses: 0,
+        date: new Date(dateStr),
+      });
+    }
+    dateMap.get(dateStr)!.costs += cost.total;
+  });
+
+  expenses.forEach((expense) => {
+    const dateStr = expense.date.toISOString().split("T")[0];
+    if (!dateMap.has(dateStr)) {
+      dateMap.set(dateStr, {
+        incomes: 0,
+        costs: 0,
+        expenses: 0,
+        date: new Date(dateStr),
+      });
+    }
+    dateMap.get(dateStr)!.expenses += expense.amount;
+  });
+
+  const sortedDates = Array.from(dateMap.entries()).sort(
+    ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
+  );
+
+  let accumulatedBalance = 0;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const cashFlowData: CashFlowData[] = sortedDates.map(([_, amounts]) => {
+    const dailyBalance = amounts.incomes - amounts.costs - amounts.expenses;
+    accumulatedBalance += dailyBalance;
+
+    return {
+      date: amounts.date.toISOString(),
+      incomes: amounts.incomes,
+      costs: amounts.costs,
+      expenses: amounts.expenses,
+      dailyBalance,
+      balance: accumulatedBalance,
+    };
+  });
+
+  const displayData =
     cashFlowData.length > 0
       ? cashFlowData
       : [
-          { date: "2023-01-01", balance: 1000 },
-          { date: "2023-01-15", balance: 1500 },
-          { date: "2023-02-01", balance: 1200 },
-          { date: "2023-02-15", balance: 2000 },
-          { date: "2023-03-01", balance: 1800 },
-          { date: "2023-03-15", balance: 2500 },
+          {
+            date: new Date("2023-01-01").toISOString(),
+            balance: 1000,
+            incomes: 1000,
+            costs: 0,
+            expenses: 0,
+            dailyBalance: 1000,
+          },
+          {
+            date: new Date("2023-01-15").toISOString(),
+            balance: 1500,
+            incomes: 500,
+            costs: 0,
+            expenses: 0,
+            dailyBalance: 500,
+          },
         ];
 
   return (
@@ -61,93 +125,7 @@ export default function CashFlowPage() {
         <ExportDataButton type="all" />
       </div>
 
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Gráfico de Flujo de Caja</CardTitle>
-            <CardDescription>Evolución del saldo acumulado</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[400px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={mockData}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="date"
-                    tickFormatter={(value) => {
-                      const date = new Date(value);
-                      return `${date.getDate()}/${date.getMonth() + 1}`;
-                    }}
-                  />
-                  <YAxis />
-                  <Tooltip
-                    formatter={(value) => [`$${value}`, "Saldo"]}
-                    labelFormatter={(label) => {
-                      const date = new Date(label);
-                      return `${date.getDate()}/${
-                        date.getMonth() + 1
-                      }/${date.getFullYear()}`;
-                    }}
-                  />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="balance"
-                    name="Saldo"
-                    stroke="#8884d8"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Tabla de Flujo de Caja</CardTitle>
-            <CardDescription>
-              Detalle del saldo acumulado por fecha
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Fecha</TableHead>
-                  <TableHead className="text-right">Saldo Acumulado</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockData.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      {new Date(item.date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <span
-                        className={
-                          item.balance >= 0 ? "text-green-600" : "text-red-600"
-                        }
-                      >
-                        ${item.balance.toFixed(2)}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+      <FlowComponent cashFlowData={displayData} />
     </div>
   );
 }

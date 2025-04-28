@@ -77,6 +77,8 @@ export const addExpense = async (
 
   revalidatePath("/gastos");
   revalidatePath("/admin/gastos");
+  revalidatePath("/estado-resultados");
+  revalidatePath("/flujo-caja");
 
   return expenseAdded;
 };
@@ -97,6 +99,8 @@ export const deleteExpense = async (id: string): Promise<PrismaExpense> => {
 
   revalidatePath("/gastos");
   revalidatePath("/admin/gastos");
+  revalidatePath("/estado-resultados");
+  revalidatePath("/flujo-caja");
 
   return expenceDeleted;
 };
