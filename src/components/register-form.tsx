@@ -63,7 +63,6 @@ export function RegisterForm({
 
   async function onSubmit(values: RegisterFormValues) {
     const createdUser = await saveCredentialUser(values);
-
     if (!createdUser) return;
     
 
@@ -71,6 +70,7 @@ export function RegisterForm({
       email: createdUser.email,
       password: values.password,
     });
+
   }
 
   function onClickSubmit() {
@@ -85,7 +85,7 @@ export function RegisterForm({
     signIn("google");
   }
 
-  const { isValid, isSubmitted } = form.formState;
+  const { isValid, isSubmitting} = form.formState;
 
   return (
     <Form {...form}>
@@ -176,7 +176,7 @@ export function RegisterForm({
             type="submit"
             className="w-full"
           >
-            {isSubmitted && isValid ? "Cargando..." : "Registrarse"}
+            {isSubmitting && isValid ? "Cargando..." : "Registrarse"}
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-background text-muted-foreground relative z-10 px-2">

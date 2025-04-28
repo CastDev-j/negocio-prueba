@@ -74,7 +74,7 @@ export function LoginForm({
     signIn("google");
   };
 
-  const { isValid, isSubmitted } = form.formState;
+  const { isValid, isSubmitting } = form.formState;
 
   return (
     <Form {...form}>
@@ -144,7 +144,7 @@ export function LoginForm({
             type="submit"
             className="w-full"
           >
-            {isSubmitted && isValid ? "Cargando..." : "Iniciar sesión"}
+            {isSubmitting && isValid ? "Cargando..." : "Iniciar sesión"}
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-background text-muted-foreground relative z-10 px-2">
