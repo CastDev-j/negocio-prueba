@@ -74,6 +74,7 @@ export const addCost = async (costData: CostInput): Promise<PrismaCost> => {
   });
 
   revalidatePath("/costos");
+  revalidatePath("/admin/costos");
 
   return costAdded;
 };
@@ -93,6 +94,7 @@ export const deleteCost = async (id: string): Promise<PrismaCost> => {
   });
 
   revalidatePath("/costos");
+  revalidatePath("/admin/costos");
 
   return costDeleted;
 };

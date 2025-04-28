@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { ExpenseInput, PrismaExpense } from "@/interfaces/store";
 import { getUserIdByEmail } from "../auth/getUserIByEmail";
 import { PrismaClient } from "@/app/generated/prisma";
+import { revalidatePath } from "next/cache";
 // import { prisma } from "@/prisma";
 
 const prisma = new PrismaClient();
@@ -63,7 +64,7 @@ export const addExpense = async (
 
   if (!userId) throw new Error("User not authenticated");
 
-  return await prisma.expense.create({
+  const expenseAdded = await prisma.expense.create({
     data: {
       ...expenseData,
       date: expenseData.date,
@@ -73,6 +74,11 @@ export const addExpense = async (
         | "financiero",
     },
   });
+
+  revalidatePath("/gastos");
+  revalidatePath("/admin/gastos");
+
+  return expenseAdded;
 };
 
 export const deleteExpense = async (id: string): Promise<PrismaExpense> => {
@@ -85,7 +91,12 @@ export const deleteExpense = async (id: string): Promise<PrismaExpense> => {
 
   if (!userId) throw new Error("User not authenticated");
 
-  return await prisma.expense.delete({
+  const expenceDeleted = await prisma.expense.delete({
     where: { id, userId },
   });
+
+  revalidatePath("/gastos");
+  revalidatePath("/admin/gastos");
+
+  return expenceDeleted;
 };

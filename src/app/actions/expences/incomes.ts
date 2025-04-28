@@ -4,6 +4,7 @@ import { PrismaClient } from "@/app/generated/prisma";
 import { auth } from "@/auth";
 import { IncomeInput, PrismaIncome } from "@/interfaces/store";
 import { getUserIdByEmail } from "../auth/getUserIByEmail";
+import { revalidatePath } from "next/cache";
 // import { prisma } from "@/prisma";
 
 const prisma = new PrismaClient();
@@ -65,7 +66,7 @@ export const addIncome = async (
   if (!userId) throw new Error("User not authenticated");
 
   const total = incomeData.quantity * incomeData.price;
-  const created = await prisma.income.create({
+  const incomeCreated = await prisma.income.create({
     data: {
       ...incomeData,
       userId,
@@ -73,7 +74,10 @@ export const addIncome = async (
     },
   });
 
-  return created;
+  revalidatePath("/ingresos");
+  revalidatePath("/admin/ingresos");
+
+  return incomeCreated;
 };
 
 export const deleteIncome = async (id: string): Promise<PrismaIncome> => {
@@ -85,7 +89,12 @@ export const deleteIncome = async (id: string): Promise<PrismaIncome> => {
   const userId = await getUserIdByEmail(email);
   if (!userId) throw new Error("User not authenticated");
 
-  return await prisma.income.delete({
+  const incomeDeleted = await prisma.income.delete({
     where: { id, userId },
   });
+
+  revalidatePath("/ingresos");
+  revalidatePath("/admin/ingresos");
+
+  return incomeDeleted;
 };
