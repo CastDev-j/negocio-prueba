@@ -7,7 +7,7 @@
     "build": "npm run prisma:generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "npx prisma generate"
+    "prisma:generate": "npx prisma generate --schema=prisma/schema.prisma"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
