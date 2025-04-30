@@ -9,7 +9,7 @@ const authRoutes = [
   "/gastos",
   "/ingresos",
 ];
-const adminRoutes = ["/admin"];
+const adminRoutes = ["/admin/usuarios", "/admin/reportes", "/admin/exportar"];
 
 export const authConfig = {
   pages: {

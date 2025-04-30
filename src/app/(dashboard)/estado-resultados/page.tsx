@@ -4,6 +4,13 @@ import { getIncome } from "@/app/actions/expences/incomes";
 import { getCosts } from "@/app/actions/expences/costs";
 import { getExpense } from "@/app/actions/expences/expences";
 import { CostItem, ExpenseItem, IncomeItem } from "@/interfaces/store";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FinanzaPyme - Estado de Resultados",
+  description: "Estado de resultados de tu negocio",
+};
+
 
 export default async function ProfitLossPage() {
   const incomes: IncomeItem[] = ((await getIncome()) || []).map((income) => ({

@@ -5,6 +5,12 @@ import { getIncome } from "@/app/actions/expences/incomes";
 import { getCosts } from "@/app/actions/expences/costs";
 import { getExpense } from "@/app/actions/expences/expences";
 import { CashFlowData } from "@/interfaces/flow";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FinanzaPyme - Flujo de Caja",
+  description: "Flujo de caja de tu negocio",
+};
 
 export default async function CashFlowPage() {
   const incomes: IncomeItem[] = ((await getIncome()) || []).map((income) => ({

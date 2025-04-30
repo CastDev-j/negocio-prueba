@@ -1,6 +1,13 @@
 import { IncomeItem } from "@/interfaces/store";
 import { IncomeComponent } from "./ui/income-component";
 import { getIncome } from "@/app/actions/expences/incomes";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FinanzaPyme - Ingresos",
+  description: "Controla tus ingresos y ventas",
+};
+
 
 export default async function IncomesPage() {
   const incomes: IncomeItem[] =

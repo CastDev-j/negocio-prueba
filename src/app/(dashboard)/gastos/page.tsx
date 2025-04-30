@@ -1,6 +1,13 @@
 import { getExpense } from "@/app/actions/expences/expences";
 import { ExpensesComponent } from "./ui/expence-component";
 import { ExpenseItem } from "@/interfaces/store";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FinanzaPyme - Gastos",
+  description: "Controla tus gastos operativos y financieros",
+};
+
 
 export default async function ExpensesPage() {
   const expenses: ExpenseItem[] =

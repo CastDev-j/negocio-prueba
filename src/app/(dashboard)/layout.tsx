@@ -10,7 +10,6 @@ import { auth } from "@/auth";
 export const metadata: Metadata = {
   title: "FinanzaPyme - Gestión Financiera para Pequeños Negocios",
   description: "Aplicación de gestión financiera para pequeños negocios",
-  generator: "v0.dev",
 };
 
 export default async function RootLayout({

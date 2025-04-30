@@ -120,7 +120,8 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       disabled={isExporting}
     >
       <Download className="mr-2 h-4 w-4" />
-      Exportar a CSV
+      <span className="sm:flex hidden">Exportar a </span>
+      <span>CSV</span>
     </Button>
   );
 }

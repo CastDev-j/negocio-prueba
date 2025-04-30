@@ -1,6 +1,12 @@
 import { getCosts } from "@/app/actions/expences/costs";
 import { CostsComponent } from "./ui/cost-component";
 import { CostItem } from "@/interfaces/store";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FinanzaPyme - Costos",
+  description: "Controla tus costos de producción",
+};
 
 export default async function CostsPage() {
   const costs: CostItem[] =

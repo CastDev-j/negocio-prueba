@@ -116,6 +116,7 @@ export function AppSidebar({ session }: SidebarProps) {
   const pathname = usePathname();
   const { toggleSidebar, isMobile } = useSidebar();
 
+  
   const userRole: "admin" | "user" | "public" =
     session?.user?.role === "admin"
       ? "admin"
