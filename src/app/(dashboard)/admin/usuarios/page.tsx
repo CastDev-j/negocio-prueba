@@ -2,7 +2,6 @@ import { getUsers } from "@/app/actions/users/users";
 import { UsersComponent } from "./ui/user-component";
 import { Metadata } from "next";
 import { auth } from "@/auth";
-import { toast } from "sonner";
 
 export const metadata: Metadata = {
   title: "FinanzaPyme - Usuarios",
@@ -12,14 +11,11 @@ export const metadata: Metadata = {
 export default async function UserPage() {
   const session = await auth();
 
-  const { success, data, error } = (await getUsers()) || [];
+  const { success, data } = (await getUsers()) || [];
 
   const users = success ? data : [];
 
-  toast.error(error, {
-    duration: 5000,
-    description: "No se pudieron cargar los usuarios",
-  });
+
 
   return (
     <div className="flex flex-col mx-auto py-6 w-full">
