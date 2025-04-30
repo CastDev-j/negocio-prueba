@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import {
   BarChart3,
@@ -14,12 +14,18 @@ import {
   Package,
   ShoppingCart,
   User2,
+  Users,
+  FileSearch,
+  DownloadCloud,
 } from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -34,14 +40,17 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
+import { Session } from "next-auth";
 
 const menuItems = [
+  // --- RUTAS PÚBLICAS ---
   {
     title: "Inicio",
     href: "/",
     icon: Home,
     security: "public",
   },
+  // --- RUTAS DE USUARIO ---
   {
     title: "Ingresos",
     href: "/ingresos",
@@ -72,18 +81,40 @@ const menuItems = [
     icon: LineChart,
     security: "user",
   },
+];
+
+const adminRoutes = [
+  // --- CONFIGURACIÓN ---
   {
-    title: "Admin",
-    href: "/admin",
-    icon: Package,
-    security: "admin",
+    title: "Usuarios",
+    href: "/admin/usuarios",
+    icon: Users,
+    category: "configuracion",
+  },
+
+  // --- REPORTES AVANZADOS ---
+  {
+    title: "Reportes Avanzados",
+    href: "/admin/reportes",
+    icon: FileSearch,
+    category: "reportes",
+  },
+  {
+    title: "Exportar Datos",
+    href: "/admin/exportar",
+    icon: DownloadCloud,
+    category: "reportes",
   },
 ];
 
-export function AppSidebar() {
-  const { data: session } = useSession();
+interface SidebarProps {
+  session: Session | null;
+}
 
+export function AppSidebar({ session }: SidebarProps) {
   const isUserLoggedIn = !!session?.user;
+  const pathname = usePathname();
+  const { toggleSidebar, isMobile } = useSidebar();
 
   const userRole: "admin" | "user" | "public" =
     session?.user?.role === "admin"
@@ -99,12 +130,8 @@ export function AppSidebar() {
       (userRole === "admin" || userRole === "user")
     )
       return true;
-    if (item.security === "admin" && userRole === "admin") return true;
     return false;
   });
-
-  const pathname = usePathname();
-  const { toggleSidebar, isMobile } = useSidebar();
 
   return (
     <Sidebar>
@@ -135,6 +162,35 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
+
+          {userRole === "admin" && (
+            <SidebarGroup>
+              <SidebarGroupLabel>
+                <div className="px-4 py-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                  Rutas Administrador
+                </div>
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                {adminRoutes.map((route) => (
+                  <SidebarMenuItem
+                    key={route.href}
+                    onClick={() => isMobile && toggleSidebar()}
+                  >
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === route.href}
+                      tooltip={route.title}
+                    >
+                      <Link href={route.href}>
+                        <route.icon className="h-5 w-5" />
+                        <span>{route.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarGroupContent>
+            </SidebarGroup>
+          )}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
@@ -145,7 +201,6 @@ export function AppSidebar() {
                 <SidebarMenuButton>
                   <User2 />
                   {isUserLoggedIn ? session.user.name : "Invitado"}
-
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

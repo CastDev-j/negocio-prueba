@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import "@/app/globals.css";
 import { CustomTrigger } from "@/components/custrom-trigger";
-
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "FinanzaPyme - Gestión Financiera para Pequeños Negocios",
@@ -13,21 +13,22 @@ export const metadata: Metadata = {
   generator: "v0.dev",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
+  const session = await auth();
 
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AppSidebar />
-          <main className="flex flex-col w-full p-4 justify-start">
-            <CustomTrigger />
-            {children}
-          </main>
-        </div>
-      </SidebarProvider>
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar session={session} />
+        <main className="flex flex-col w-full p-4 justify-start">
+          <CustomTrigger />
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
