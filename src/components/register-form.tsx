@@ -21,7 +21,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { saveCredentialUser } from "@/app/actions/auth/saveCredentialUser";
 
@@ -62,15 +62,25 @@ export function RegisterForm({
   });
 
   async function onSubmit(values: RegisterFormValues) {
-    const createdUser = await saveCredentialUser(values);
+    const { data, error, success } = await saveCredentialUser(values);
+
+    if (!success) {
+      if (error === "EmailAlreadyExists") {
+        redirect("/auth/register?error=EmailAlreadyExists");
+      } else {
+        redirect("/auth/register?error=default");
+      }
+      return;
+    }
+
+    const createdUser = data;
+
     if (!createdUser) return;
-    
 
     signIn("credentials", {
       email: createdUser.email,
       password: values.password,
     });
-
   }
 
   function onClickSubmit() {
@@ -85,7 +95,7 @@ export function RegisterForm({
     signIn("google");
   }
 
-  const { isValid, isSubmitting} = form.formState;
+  const { isValid, isSubmitting } = form.formState;
 
   return (
     <Form {...form}>

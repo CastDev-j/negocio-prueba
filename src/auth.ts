@@ -15,7 +15,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       async authorize(credentials) {
         const { email, password } = credentials as LoginFormValues;
 
-        const user = await getUserByEmail(email.toLowerCase());
+        const { data } = await getUserByEmail(email.toLowerCase());
+
+        if (!data) return null;
+
+        const user = data;
 
         if (!user) return null;
 
@@ -33,15 +37,24 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     }),
     Google({
       profile: async (profile) => {
-        const existingUser = await getUserByEmail(profile.email);
+        // 1. Intentar obtener usuario existente
+        const { data: existingUser, success } = await getUserByEmail(
+          profile.email
+        );
 
-        if (existingUser) {
+        if (success && existingUser) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { password, ...userWithoutPassword } = existingUser;
-
-          return userWithoutPassword;
+          return {
+            id: userWithoutPassword.id,
+            name: userWithoutPassword.name,
+            email: userWithoutPassword.email,
+            image: userWithoutPassword.image || null,
+            role: userWithoutPassword.role,
+          };
         }
 
+        // 2. Si no existe, crear nuevo usuario
         const newUser: GoogleUser = {
           name: profile.name as string,
           email: profile.email as string,
@@ -52,13 +65,23 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           updatedAt: new Date(),
         };
 
-        const userSaved = await saveGoogleUser(newUser);
+        const { data: userSavedData, success: successUserSaved } =
+          await saveGoogleUser(newUser);
 
-        if (!userSaved) {
-          throw new Error("Error saving user to database");
+        if (successUserSaved && userSavedData) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { password, createdAt, updatedAt, ...userSaved } =
+            userSavedData;
+          return {
+            id: userSaved.id,
+            name: userSaved.name,
+            email: userSaved.email,
+            image: userSaved.image || null,
+            role: userSaved.role,
+          };
         }
 
-        return userSaved;
+        throw new Error("Failed to get or create user");
       },
     }),
   ],

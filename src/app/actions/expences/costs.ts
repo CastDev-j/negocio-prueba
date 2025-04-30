@@ -35,7 +35,11 @@ export const getCosts = async () => {
   const { user } = session;
   const { email } = user;
 
-  const userId = await getUserIdByEmail(email);
+  const { success, data } = await getUserIdByEmail(email);
+
+  if (!success) throw new Error("User not authenticated");
+
+  const userId = data?.id;
 
   if (!userId) throw new Error("User not authenticated");
 
@@ -58,7 +62,11 @@ export const addCost = async (costData: CostInput): Promise<PrismaCost> => {
   const { user } = session;
   const { email } = user;
 
-  const userId = await getUserIdByEmail(email);
+  const { success, data } = await getUserIdByEmail(email);
+
+  if (!success) throw new Error("User not authenticated");
+
+  const userId = data?.id;
 
   if (!userId) throw new Error("User not authenticated");
 
@@ -84,7 +92,11 @@ export const deleteCost = async (id: string): Promise<PrismaCost> => {
   const { user } = session;
   const { email } = user;
 
-  const userId = await getUserIdByEmail(email);
+  const { success, data } = await getUserIdByEmail(email);
+
+  if (!success) throw new Error("User not authenticated");
+
+  const userId = data?.id;
 
   if (!userId) throw new Error("User not authenticated");
 
