@@ -1,6 +1,7 @@
 import { getUsers } from "@/app/actions/users/users";
 import { UsersComponent } from "./ui/user-component";
 import { Metadata } from "next";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "FinanzaPyme - Usuarios",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 
 
 export default async function UserPage() {
+  const session = await auth();
 
   const users = await getUsers() || [];
 
@@ -21,7 +23,7 @@ export default async function UserPage() {
         </p>
       </div>
 
-      <UsersComponent users={users}/>
+      <UsersComponent users={users} session={session!}/>
     </div>
   );
 }

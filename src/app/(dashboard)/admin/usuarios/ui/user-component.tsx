@@ -37,6 +37,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Session } from "next-auth";
+import { changeUserRole, deleteUser } from "@/app/actions/users/users";
 
 interface User {
   id: string;
@@ -47,42 +49,71 @@ interface User {
 
 interface UsersComponentProps {
   users: User[];
+  session: Session;
 }
 
-export const UsersComponent: FC<UsersComponentProps> = ({ users }) => {
+const roleEs = {
+  admin: "Administrador",
+  user: "Usuario",
+};
+
+export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
   const [activeTab, setActiveTab] = useState("ingresos");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
-  const handleRoleChange = (userId: string, newRole: string) => {
-    console.log(`Cambiando rol del usuario ${userId} a ${newRole}`);
+  const handleRoleChange = async (
+    email: string,
+    newRole: keyof typeof roleEs
+  ) => {
+    console.log(`Cambiando rol del usuario ${email} a ${newRole}`);
     // Aquí iría la lógica para actualizar el rol en la base de datos
+    const updatedUser = await changeUserRole(email, newRole as $Enums.Role);
+
+    if (updatedUser) {
+      toast.success("Rol actualizado", {
+        description: `El rol del usuario ${email} ha sido actualizado a ${roleEs[newRole]}`,
+        position: "top-right",
+      });
+    } else {
+      toast.error("Error al actualizar rol", {
+        description: "No se pudo actualizar el rol del usuario.",
+        position: "top-right",
+      });
+    }
+
+    setIsSubmitting(false);
+    setSelectedUser(null);
+    setActiveTab("ingresos");
   };
 
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
 
     setIsSubmitting(true);
-    try {
-      // Lógica para eliminar usuario
-      console.log(`Eliminar usuario ${userToDelete}`);
+    // Lógica para eliminar usuario
+    console.log(`Eliminar usuario ${userToDelete}`);
+
+    const deletedUser = await deleteUser(userToDelete);
+
+    if (deletedUser) {
       toast.success("Usuario eliminado", {
-        description: "El usuario ha sido eliminado correctamente.",
+        description: `El usuario ${userToDelete} ha sido eliminado.`,
         position: "top-right",
       });
-    } catch (error) {
-      const {} = error as Error;
+    } else {
       toast.error("Error al eliminar usuario", {
         description: "No se pudo eliminar el usuario.",
         position: "top-right",
       });
-    } finally {
-      setIsSubmitting(false);
-      setShowDeleteDialog(false);
-      setUserToDelete(null);
     }
+
+    setIsSubmitting(false);
+    setShowDeleteDialog(false);
+    setUserToDelete(null);
+    setSelectedUser(null);
   };
 
   const columns: ColumnDef<User>[] = [
@@ -128,7 +159,10 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users }) => {
         return (
           <Select
             defaultValue={user.role}
-            onValueChange={(value) => handleRoleChange(user.id, value)}
+            disabled={session.user.email === user.email}
+            onValueChange={(value) =>
+              handleRoleChange(user.email, value as keyof typeof roleEs)
+            }
           >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Seleccionar rol" />
@@ -172,9 +206,13 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users }) => {
           <Button
             variant="ghost"
             size="icon"
-            disabled={isSubmitting}
+            disabled={
+              isSubmitting ||
+              session.user.email === user.email ||
+              user.role === "admin"
+            }
             onClick={() => {
-              setUserToDelete(user.id);
+              setUserToDelete(user.email.toLowerCase());
               setShowDeleteDialog(true);
             }}
           >
@@ -196,7 +234,8 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users }) => {
             </AlertDialogTitle>
             <AlertDialogDescription>
               Esta acción no se puede deshacer. El usuario será eliminado
-              permanentemente.
+              permanentemente.{" "}
+              <span className="text-destructive">Incluido su historial de ingresos, costos y gastos.</span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

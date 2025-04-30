@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { CostInput, PrismaCost } from "@/interfaces/store";
 import { getUserIdByEmail } from "../auth/getUserIByEmail";
 import { PrismaClient } from "@/app/generated/prisma";
-import { revalidatePath } from "next/cache";
+import { updatePaths } from "@/lib/helpers/updatePaths";
 // import { prisma } from "@/prisma";
 
 const prisma = new PrismaClient();
@@ -73,10 +73,7 @@ export const addCost = async (costData: CostInput): Promise<PrismaCost> => {
     },
   });
 
-  revalidatePath("/costos");
-  revalidatePath("/admin/costos");
-  revalidatePath("/estado-resultados");
-  revalidatePath("/flujo-caja");
+  updatePaths();
 
   return costAdded;
 };
@@ -95,10 +92,7 @@ export const deleteCost = async (id: string): Promise<PrismaCost> => {
     where: { id, userId },
   });
 
-  revalidatePath("/costos");
-  revalidatePath("/admin/costos");
-  revalidatePath("/estado-resultados");
-  revalidatePath("/flujo-caja");
+  updatePaths();
 
   return costDeleted;
 };

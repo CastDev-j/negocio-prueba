@@ -2,11 +2,11 @@ import NextAuth from "next-auth";
 import { authConfig } from "./auth.config";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { User } from "./app/generated/prisma";
 import bcrypt from "bcryptjs";
 import { type LoginFormValues } from "./lib/schemas/finance-schemas";
 import { getUserByEmail } from "./app/actions/auth/getUserByEmail";
 import { saveGoogleUser } from "./app/actions/auth/saveGoogleUser";
+import { GoogleUser } from "./interfaces/user";
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
@@ -42,8 +42,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           return userWithoutPassword;
         }
 
-        const newUser: User = {
-          id: crypto.randomUUID(), // Generate a unique ID
+        const newUser: GoogleUser = {
           name: profile.name as string,
           email: profile.email as string,
           role: "user",
