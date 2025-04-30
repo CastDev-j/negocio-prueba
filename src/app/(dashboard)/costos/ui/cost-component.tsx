@@ -105,9 +105,9 @@ export const CostsComponent: FC<CostsComponentProps> = ({ costs }) => {
             disabled={isSubmitting}
             onClick={async () => {
               setIsSubmitting(true);
-              const deletedCost = await deleteCost(cost.id);
+              const {success} = await deleteCost(cost.id);
 
-              if (!deletedCost) {
+              if (!success) {
                 toast.error("Error al eliminar el costo", {
                   description: "No se pudo eliminar el costo.",
                   position: "top-right",

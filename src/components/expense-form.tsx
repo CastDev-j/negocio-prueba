@@ -49,15 +49,16 @@ export function ExpenseForm() {
   });
 
   async function onSubmit(values: ExpenseFormValues) {
-    const expenseCreater = await addExpense(values);
+    const { success } = await addExpense(values);
 
-    if (!expenseCreater) {
+    if (!success) {
       toast.error("Error al registrar el gasto", {
-        description: "No se pudo registrar el gasto. Intenta nuevamente.",
+        description: "Error al registrar el gasto",
         position: "top-right",
       });
       return;
     }
+
 
     toast.success("Gasto registrado", {
       description: "El gasto ha sido registrado correctamente.",

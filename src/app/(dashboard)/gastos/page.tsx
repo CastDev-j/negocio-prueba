@@ -8,13 +8,15 @@ export const metadata: Metadata = {
   description: "Controla tus gastos operativos y financieros",
 };
 
-
 export default async function ExpensesPage() {
-  const expenses: ExpenseItem[] =
-    (await getExpense()).map((expense) => ({
-      ...expense,
-      date: new Date(expense.date),
-    })) || [];
+  const { data = [], success } = await getExpense();
+
+  const expenses: ExpenseItem[] = success
+    ? data.map((expense) => ({
+        ...expense,
+        date: new Date(expense.date),
+      }))
+    : [];
 
   return (
     <div className="container mx-auto py-6">

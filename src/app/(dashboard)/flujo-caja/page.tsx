@@ -18,21 +18,23 @@ export default async function CashFlowPage() {
     date: new Date(income.date),
   }));
 
-  const { data: costData, success: successData } = await getCosts();
+  const { data: costData = [], success: costSuccess } = await getCosts();
 
-  const costs: CostItem[] = successData
+  const costs: CostItem[] = costSuccess
     ? costData.map((cost) => ({
         ...cost,
         date: new Date(cost.date),
       }))
     : [];
 
-  const expenses: ExpenseItem[] = ((await getExpense()) || []).map(
-    (expense) => ({
-      ...expense,
-      date: new Date(expense.date),
-    })
-  );
+  const { data: expenceData = [], success: expenceSuccess } = await getExpense();
+
+  const expenses: ExpenseItem[] = expenceSuccess
+    ? expenceData.map((expense) => ({
+        ...expense,
+        date: new Date(expense.date),
+      }))
+    : [];
 
   const dateMap = new Map<
     string,

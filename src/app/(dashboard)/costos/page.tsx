@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CostsPage() {
-  const { data, success } = await getCosts();
+  const { data = [], success } = await getCosts();
 
   const costs: CostItem[] = success
     ? data.map((cost) => ({

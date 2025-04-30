@@ -41,7 +41,7 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       }
 
       if (type === "costs" || type === "all") {
-        const { data: costData, success: successCost } = await getCosts();
+        const { data: costData = [], success: successCost } = await getCosts();
 
         const costs = successCost ? costData : [];
 
@@ -57,7 +57,12 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       }
 
       if (type === "expenses" || type === "all") {
-        const expenseData = ((await getExpense()) || []).map((expense) => ({
+        const { data: expenseData = [], success: successExpense } =
+          await getExpense();
+
+        const expenses = successExpense ? expenseData : [];
+
+        const expenseDataFormatted = expenses.map((expense) => ({
           ...expense,
           date: new Date(expense.date).toLocaleDateString(),
           type: "Gasto",
@@ -65,7 +70,7 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
           price: expense.amount,
           total: expense.amount,
         }));
-        data = [...data, ...expenseData];
+        data = [...data, ...expenseDataFormatted];
         filename =
           type === "expenses"
             ? "gastos.csv"

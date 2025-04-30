@@ -43,9 +43,9 @@ export function CostForm() {
   });
 
   async function onSubmit(values: CostFormValues) {
-    const addedCost = await addCost(values);
+    const {success} = await addCost(values);
 
-    if (!addedCost) {
+    if (!success) {
       toast.error("Error al registrar el costo", {
         description: "No se pudo registrar el costo. Intenta nuevamente.",
         position: "top-right",

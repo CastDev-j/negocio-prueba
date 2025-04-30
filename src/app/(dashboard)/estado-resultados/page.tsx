@@ -16,7 +16,7 @@ export default async function ProfitLossPage() {
     ...income,
     date: new Date(income.date),
   }));
-  const { data: costData, success: successData } = await getCosts();
+  const { data: costData = [], success: successData } = await getCosts();
 
   const costs: CostItem[] = successData
     ? costData.map((cost) => ({
@@ -24,12 +24,16 @@ export default async function ProfitLossPage() {
         date: new Date(cost.date),
       }))
     : [];
-  const expenses: ExpenseItem[] = ((await getExpense()) || []).map(
-    (expense) => ({
-      ...expense,
-      date: new Date(expense.date),
-    })
-  );
+
+  const { data: expenseData = [], success: successExpense } =
+    await getExpense();
+
+  const expenses: ExpenseItem[] = successExpense
+    ? expenseData.map((expense) => ({
+        ...expense,
+        date: new Date(expense.date),
+      }))
+    : [];
 
   const totalIncomes = incomes.reduce((total, income) => {
     return total + income.total;
