@@ -70,16 +70,24 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
   ) => {
     console.log(`Cambiando rol del usuario ${email} a ${newRole}`);
     // Aquí iría la lógica para actualizar el rol en la base de datos
-    const updatedUser = await changeUserRole(email, newRole as $Enums.Role);
+    const { data, success } = await changeUserRole(
+      email,
+      newRole as $Enums.Role
+    );
+
+    if (!success) {
+      toast.error("Error al cambiar rol", {
+        description: "No se pudo cambiar el rol del usuario.",
+        position: "top-right",
+      });
+      return;
+    }
+
+    const updatedUser = data;
 
     if (updatedUser) {
       toast.success("Rol actualizado", {
         description: `El rol del usuario ${email} ha sido actualizado a ${roleEs[newRole]}`,
-        position: "top-right",
-      });
-    } else {
-      toast.error("Error al actualizar rol", {
-        description: "No se pudo actualizar el rol del usuario.",
         position: "top-right",
       });
     }
@@ -96,16 +104,21 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
     // Lógica para eliminar usuario
     console.log(`Eliminar usuario ${userToDelete}`);
 
-    const deletedUser = await deleteUser(userToDelete);
+    const { success, data } = await deleteUser(userToDelete);
+
+    if (!success) {
+      toast.error("Error al eliminar usuario", {
+        description: "No se pudo eliminar el usuario.",
+        position: "top-right",
+      });
+      return;
+    }
+
+    const deletedUser = data;
 
     if (deletedUser) {
       toast.success("Usuario eliminado", {
         description: `El usuario ${userToDelete} ha sido eliminado.`,
-        position: "top-right",
-      });
-    } else {
-      toast.error("Error al eliminar usuario", {
-        description: "No se pudo eliminar el usuario.",
         position: "top-right",
       });
     }
@@ -235,7 +248,9 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
             <AlertDialogDescription>
               Esta acción no se puede deshacer. El usuario será eliminado
               permanentemente.{" "}
-              <span className="text-destructive">Incluido su historial de ingresos, costos y gastos.</span>
+              <span className="text-destructive">
+                Incluido su historial de ingresos, costos y gastos.
+              </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
