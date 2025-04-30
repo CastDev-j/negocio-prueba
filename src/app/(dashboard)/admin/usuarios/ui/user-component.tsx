@@ -68,8 +68,6 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
     email: string,
     newRole: keyof typeof roleEs
   ) => {
-    console.log(`Cambiando rol del usuario ${email} a ${newRole}`);
-    // Aquí iría la lógica para actualizar el rol en la base de datos
     const { data, success } = await changeUserRole(
       email,
       newRole as $Enums.Role
@@ -101,9 +99,6 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
     if (!userToDelete) return;
 
     setIsSubmitting(true);
-    // Lógica para eliminar usuario
-    console.log(`Eliminar usuario ${userToDelete}`);
-
     const { success, data } = await deleteUser(userToDelete);
 
     if (!success) {
@@ -111,6 +106,12 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
         description: "No se pudo eliminar el usuario.",
         position: "top-right",
       });
+
+      setIsSubmitting(false);
+      setShowDeleteDialog(false);
+      setUserToDelete(null);
+      setSelectedUser(null);
+
       return;
     }
 

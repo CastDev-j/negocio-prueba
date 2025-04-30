@@ -45,6 +45,7 @@ export const getUsers = async () => {
 
 export const changeUserRole = async (email: string, role: $Enums.Role) => {
   try {
+
     const session = await auth();
 
     if (!session) throw new Error("User not authenticated");
@@ -69,6 +70,7 @@ export const changeUserRole = async (email: string, role: $Enums.Role) => {
       data: updatedUser,
     };
   } catch (error) {
+    updatePaths();
     return {
       success: false,
       message: "Error changing user role",
@@ -79,6 +81,7 @@ export const changeUserRole = async (email: string, role: $Enums.Role) => {
 
 export const deleteUser = async (email: string) => {
   try {
+
     const session = await auth();
 
     if (!session) throw new Error("User not authenticated");
@@ -124,6 +127,7 @@ export const deleteUser = async (email: string) => {
       data: deletedUser,
     };
   } catch (error) {
+    
     return {
       success: false,
       message: "Error deleting user",
