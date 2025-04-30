@@ -8,13 +8,15 @@ export const metadata: Metadata = {
   description: "Controla tus ingresos y ventas",
 };
 
-
 export default async function IncomesPage() {
-  const incomes: IncomeItem[] =
-    (await getIncome()).map((cost) => ({
-      ...cost,
-      date: new Date(cost.date),
-    })) || [];
+  const { data = [], success } = await getIncome();
+
+  const incomes: IncomeItem[] = success
+    ? data.map((income) => ({
+        ...income,
+        date: new Date(income.date),
+      }))
+    : [];
 
   return (
     <div className="container mx-auto py-6">

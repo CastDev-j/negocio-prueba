@@ -13,10 +13,14 @@ export const metadata: Metadata = {
 };
 
 export default async function CashFlowPage() {
-  const incomes: IncomeItem[] = ((await getIncome()) || []).map((income) => ({
-    ...income,
-    date: new Date(income.date),
-  }));
+  const { data: incomeData = [], success: successIncome } = await getIncome();
+
+  const incomes: IncomeItem[] = successIncome
+    ? incomeData.map((income) => ({
+        ...income,
+        date: new Date(income.date),
+      }))
+    : [];
 
   const { data: costData = [], success: costSuccess } = await getCosts();
 
@@ -27,7 +31,8 @@ export default async function CashFlowPage() {
       }))
     : [];
 
-  const { data: expenceData = [], success: expenceSuccess } = await getExpense();
+  const { data: expenceData = [], success: expenceSuccess } =
+    await getExpense();
 
   const expenses: ExpenseItem[] = expenceSuccess
     ? expenceData.map((expense) => ({

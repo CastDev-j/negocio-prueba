@@ -43,9 +43,9 @@ export function IncomeForm() {
   });
 
   async function onSubmit(values: IncomeFormValues) {
-    const incomeCreated = await addIncome(values);
+    const {success} = await addIncome(values);
 
-    if (!incomeCreated) {
+    if (!success) {
       toast.error("Error al registrar el ingreso", {
         description: "No se pudo registrar el ingreso. Intenta nuevamente.",
         position: "top-right",

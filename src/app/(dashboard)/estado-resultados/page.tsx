@@ -12,10 +12,15 @@ export const metadata: Metadata = {
 };
 
 export default async function ProfitLossPage() {
-  const incomes: IncomeItem[] = ((await getIncome()) || []).map((income) => ({
-    ...income,
-    date: new Date(income.date),
-  }));
+  const { data: incomeData = [], success: successIncome } = await getIncome();
+
+  const incomes: IncomeItem[] = successIncome
+    ? incomeData.map((income) => ({
+        ...income,
+        date: new Date(income.date),
+      }))
+    : [];
+
   const { data: costData = [], success: successData } = await getCosts();
 
   const costs: CostItem[] = successData

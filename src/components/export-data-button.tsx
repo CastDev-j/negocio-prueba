@@ -29,12 +29,17 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       let headers = "";
 
       if (type === "incomes" || type === "all") {
-        const incomeData = ((await getIncome()) || []).map((income) => ({
+        const { data: incomeData = [], success: successIncome } =
+          await getIncome();
+
+        const incomes = successIncome ? incomeData : [];
+
+        const incomeDataFormatted = incomes.map((income) => ({
           ...income,
           date: new Date(income.date).toLocaleDateString(),
           type: "Ingreso",
         }));
-        data = [...data, ...incomeData];
+        data = [...data, ...incomeDataFormatted];
         filename =
           type === "incomes" ? "ingresos.csv" : "datos_financieros.csv";
         headers = "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";

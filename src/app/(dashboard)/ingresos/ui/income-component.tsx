@@ -105,9 +105,9 @@ export const IncomeComponent: FC<IncomeComponentProps> = ({ incomes }) => {
             disabled={isSubmitting}
             onClick={async () => {
               setIsSubmitting(true);
-              const deletedIncome = await deleteIncome(income.id);
+              const {success} = await deleteIncome(income.id);
 
-              if (!deletedIncome) {
+              if (!success) {
                 toast.error("Error al eliminar el ingreso", {
                   description: "No se pudo eliminar el ingreso.",
                   position: "top-right",
