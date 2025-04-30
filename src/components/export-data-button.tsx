@@ -41,12 +41,16 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       }
 
       if (type === "costs" || type === "all") {
-        const costData = ((await getCosts()) || []).map((cost) => ({
+        const { data: costData, success: successCost } = await getCosts();
+
+        const costs = successCost ? costData : [];
+
+        const costDataFormatted = costs.map((cost) => ({
           ...cost,
           date: new Date(cost.date).toLocaleDateString(),
           type: "Costo",
         }));
-        data = [...data, ...costData];
+        data = [...data, ...costDataFormatted];
         filename =
           type === "costs" ? "costos.csv" : filename || "datos_financieros.csv";
         headers = headers || "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";

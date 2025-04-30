@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { CostInput, PrismaCost } from "@/interfaces/store";
+import { CostInput } from "@/interfaces/store";
 import { getUserIdByEmail } from "../auth/getUserIByEmail";
 import { PrismaClient } from "@/app/generated/prisma";
 import { updatePaths } from "@/lib/helpers/updatePaths";
@@ -10,23 +10,35 @@ import { updatePaths } from "@/lib/helpers/updatePaths";
 const prisma = new PrismaClient();
 
 export const getAdminCosts = async () => {
-  const session = await auth();
-  if (!session) throw new Error("User not authenticated");
-  const { user } = session;
-  const { role } = user;
+  try {
+    const session = await auth();
+    if (!session) throw new Error("User not authenticated");
+    const { user } = session;
+    const { role } = user;
 
-  if (role !== "admin") throw new Error("User not authenticated");
+    if (role !== "admin") throw new Error("User not authenticated");
 
-  const costs = await prisma.cost.findMany({
-    orderBy: { date: "desc" },
-  });
+    const costs = await prisma.cost.findMany({
+      orderBy: { date: "desc" },
+    });
 
-  return costs.map((cost) => {
     return {
-      ...cost,
-      date: cost.date.toISOString().split("T")[0],
+      success: true,
+      message: "Costs fetched successfully",
+      data: costs.map((cost) => {
+        return {
+          ...cost,
+          date: cost.date.toISOString().split("T")[0],
+        };
+      }),
     };
-  });
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error fetching costs",
+      error: (error as Error).message,
+    };
+  }
 };
 
 export const getCosts = async () => {
@@ -48,63 +60,91 @@ export const getCosts = async () => {
     orderBy: { date: "desc" },
   });
 
-  return costs.map((cost) => {
+  return {
+    success: true,
+    message: "Costs fetched successfully",
+    data: costs.map((cost) => {
+      return {
+        ...cost,
+        date: cost.date.toISOString().split("T")[0],
+      };
+    }),
+  };
+};
+
+export const addCost = async (costData: CostInput) => {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("User not authenticated");
+    const { user } = session;
+    const { email } = user;
+
+    const { success, data } = await getUserIdByEmail(email);
+
+    if (!success) throw new Error("User not authenticated");
+
+    const userId = data?.id;
+
+    if (!userId) throw new Error("User not authenticated");
+
+    const total = costData.quantity * costData.price;
+
+    const costAdded = await prisma.cost.create({
+      data: {
+        ...costData,
+        date: costData.date,
+        userId,
+        total,
+      },
+    });
+
+    updatePaths();
+
     return {
-      ...cost,
-      date: cost.date.toISOString().split("T")[0],
+      success: true,
+      message: "Cost added successfully",
+      data: costAdded,
     };
-  });
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error adding cost",
+      error: (error as Error).message,
+    };
+  }
 };
 
-export const addCost = async (costData: CostInput): Promise<PrismaCost> => {
-  const session = await auth();
-  if (!session) throw new Error("User not authenticated");
-  const { user } = session;
-  const { email } = user;
+export const deleteCost = async (id: string) => {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("User not authenticated");
+    const { user } = session;
+    const { email } = user;
 
-  const { success, data } = await getUserIdByEmail(email);
+    const { success, data } = await getUserIdByEmail(email);
 
-  if (!success) throw new Error("User not authenticated");
+    if (!success) throw new Error("User not authenticated");
 
-  const userId = data?.id;
+    const userId = data?.id;
 
-  if (!userId) throw new Error("User not authenticated");
+    if (!userId) throw new Error("User not authenticated");
 
-  const total = costData.quantity * costData.price;
+    const costDeleted = await prisma.cost.delete({
+      where: { id, userId },
+    });
 
-  const costAdded = await prisma.cost.create({
-    data: {
-      ...costData,
-      date: costData.date,
-      userId,
-      total,
-    },
-  });
+    updatePaths();
 
-  updatePaths();
-
-  return costAdded;
-};
-
-export const deleteCost = async (id: string): Promise<PrismaCost> => {
-  const session = await auth();
-  if (!session) throw new Error("User not authenticated");
-  const { user } = session;
-  const { email } = user;
-
-  const { success, data } = await getUserIdByEmail(email);
-
-  if (!success) throw new Error("User not authenticated");
-
-  const userId = data?.id;
-
-  if (!userId) throw new Error("User not authenticated");
-
-  const costDeleted = await prisma.cost.delete({
-    where: { id, userId },
-  });
-
-  updatePaths();
-
-  return costDeleted;
+    return {
+      success: true,
+      message: "Cost deleted successfully",
+      data: costDeleted,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error deleting cost",
+      error: (error as Error).message,
+    };
+  }
 };

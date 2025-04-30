@@ -9,11 +9,14 @@ export const metadata: Metadata = {
 };
 
 export default async function CostsPage() {
-  const costs: CostItem[] =
-    (await getCosts()).map((cost) => ({
-      ...cost,
-      date: new Date(cost.date),
-    })) || [];
+  const { data, success } = await getCosts();
+
+  const costs: CostItem[] = success
+    ? data.map((cost) => ({
+        ...cost,
+        date: new Date(cost.date),
+      }))
+    : [];
 
   return (
     <div className="flex flex-col mx-auto py-6 w-full">
