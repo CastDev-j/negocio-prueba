@@ -88,7 +88,7 @@ export const getCostsByUserId = async (userId: string) => {
     const { role } = user;
 
     if (role !== "admin") throw new Error("User not authenticated");
-    
+
     const costs = await prisma.cost.findMany({
       where: { userId },
       orderBy: { date: "desc" },
@@ -173,7 +173,7 @@ export const deleteCost = async (id: string) => {
     if (!userId) throw new Error("User not authenticated");
 
     const costDeleted = await prisma.cost.delete({
-      where: { id, userId },
+      where: user.role === "admin" ? { id } : { id, userId },
     });
 
     updatePaths();

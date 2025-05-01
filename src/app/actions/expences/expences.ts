@@ -177,7 +177,7 @@ export const deleteExpense = async (id: string) => {
     if (!userId) throw new Error("User not authenticated");
 
     const expenceDeleted = await prisma.expense.delete({
-      where: { id, userId },
+      where: user.role === "admin" ? { id } : { id, userId },
     });
 
     updatePaths();

@@ -13,9 +13,13 @@ import { toast } from "sonner";
 
 interface IncomeTableProps {
   incomes: IncomeItem[];
+  setRevalidateKey?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const IncomeTable: FC<IncomeTableProps> = ({ incomes }) => {
+export const IncomeTable: FC<IncomeTableProps> = ({
+  incomes,
+  setRevalidateKey,
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const columns: ColumnDef<IncomeItem>[] = [
@@ -94,6 +98,7 @@ export const IncomeTable: FC<IncomeTableProps> = ({ incomes }) => {
                   description: "No se pudo eliminar el ingreso.",
                   position: "top-right",
                 });
+                setIsSubmitting(false);
                 return;
               }
 
@@ -101,6 +106,8 @@ export const IncomeTable: FC<IncomeTableProps> = ({ incomes }) => {
                 description: "El ingreso ha sido eliminado correctamente.",
                 position: "top-right",
               });
+
+              if (setRevalidateKey) setRevalidateKey((prev) => prev + 1);
 
               setIsSubmitting(false);
             }}
@@ -113,11 +120,11 @@ export const IncomeTable: FC<IncomeTableProps> = ({ incomes }) => {
   ];
 
   return (
-      <DataTable
-        columns={columns}
-        data={incomes}
-        searchKey="concept"
-        searchPlaceholder="Buscar por concepto..."
-      />
+    <DataTable
+      columns={columns}
+      data={incomes}
+      searchKey="concept"
+      searchPlaceholder="Buscar por concepto..."
+    />
   );
 };

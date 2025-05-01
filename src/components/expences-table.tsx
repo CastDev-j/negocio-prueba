@@ -16,9 +16,10 @@ import { deleteExpense } from "@/app/actions/expences/expences";
 
 interface ExpensesComponentProps {
   expenses: ExpenseItem[];
+  setRevalidateKey?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const ExpencesTable: FC<ExpensesComponentProps> = ({ expenses }) => {
+export const ExpencesTable: FC<ExpensesComponentProps> = ({ expenses, setRevalidateKey }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const columns: ColumnDef<ExpenseItem>[] = [
@@ -89,6 +90,7 @@ export const ExpencesTable: FC<ExpensesComponentProps> = ({ expenses }) => {
                   description: "No se pudo eliminar el gasto.",
                   position: "top-right",
                 });
+                setIsSubmitting(false);
                 return;
               }
 
@@ -96,6 +98,9 @@ export const ExpencesTable: FC<ExpensesComponentProps> = ({ expenses }) => {
                 description: "El gasto ha sido eliminado correctamente.",
                 position: "top-right",
               });
+              
+              if (setRevalidateKey) setRevalidateKey((prev) => prev + 1);
+
               setIsSubmitting(false);
             }}
           >

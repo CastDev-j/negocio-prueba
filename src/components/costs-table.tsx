@@ -13,9 +13,13 @@ import { deleteCost } from "@/app/actions/expences/costs";
 
 interface CostsTableProps {
   costs: CostItem[];
+  setRevalidateKey?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export const CostsTable: FC<CostsTableProps> = ({ costs }) => {
+export const CostsTable: FC<CostsTableProps> = ({
+  costs,
+  setRevalidateKey,
+}) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const columns: ColumnDef<CostItem>[] = [
@@ -102,6 +106,9 @@ export const CostsTable: FC<CostsTableProps> = ({ costs }) => {
                 description: "El costo ha sido eliminado correctamente.",
                 position: "top-right",
               });
+
+              if (setRevalidateKey) setRevalidateKey((prev) => prev + 1);
+
               setIsSubmitting(false);
             }}
           >
@@ -112,11 +119,11 @@ export const CostsTable: FC<CostsTableProps> = ({ costs }) => {
     },
   ];
   return (
-      <DataTable
-        columns={columns}
-        data={costs}
-        searchKey="concept"
-        searchPlaceholder="Buscar por concepto..."
-      />
+    <DataTable
+      columns={columns}
+      data={costs}
+      searchKey="concept"
+      searchPlaceholder="Buscar por concepto..."
+    />
   );
 };
