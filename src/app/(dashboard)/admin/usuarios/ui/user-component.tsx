@@ -51,7 +51,6 @@ interface UsersComponentProps {
 }
 
 export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
-
   const [activeTab, setActiveTab] = useState("ingresos");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -65,8 +64,6 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [revalidateKey, setRevalidateKey] = useState(0);
-
-  
 
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
@@ -290,7 +287,11 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
             <TabsTrigger value="costos">Costos</TabsTrigger>
             <TabsTrigger value="gastos">Gastos</TabsTrigger>
           </TabsList>
-          <ExportDataButton type="all" disabled={!selectedUser} />
+          <ExportDataButton
+            type="all"
+            disabled={!selectedUser}
+            userId={selectedUser?.id || undefined}
+          />
         </div>
 
         <TabsContent value="ingresos">
@@ -310,7 +311,10 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
                 isLoading ? (
                   <DataTableSkeleton />
                 ) : incomes.length > 0 ? (
-                  <IncomeTable setRevalidateKey={setRevalidateKey} incomes={incomes} />
+                  <IncomeTable
+                    setRevalidateKey={setRevalidateKey}
+                    incomes={incomes}
+                  />
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />
@@ -355,7 +359,10 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
                 isLoading ? (
                   <DataTableSkeleton />
                 ) : costs.length > 0 ? (
-                  <CostsTable  setRevalidateKey={setRevalidateKey} costs={costs} />
+                  <CostsTable
+                    setRevalidateKey={setRevalidateKey}
+                    costs={costs}
+                  />
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />
@@ -400,7 +407,10 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
                 isLoading ? (
                   <DataTableSkeleton />
                 ) : expenses.length > 0 ? (
-                  <ExpencesTable  setRevalidateKey={setRevalidateKey} expenses={expenses} />
+                  <ExpencesTable
+                    setRevalidateKey={setRevalidateKey}
+                    expenses={expenses}
+                  />
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />

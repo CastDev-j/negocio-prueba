@@ -4,18 +4,20 @@ import { useState } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { getCosts } from "@/app/actions/expences/costs";
-import { getExpense } from "@/app/actions/expences/expences";
-import { getIncome } from "@/app/actions/expences/incomes";
+import { getCosts, getCostsByUserId } from "@/app/actions/expences/costs";
+import { getExpense, getExpensesByUserId } from "@/app/actions/expences/expences";
+import { getIncome, getIncomesByUserId } from "@/app/actions/expences/incomes";
 
 type ExportType = "incomes" | "costs" | "expenses" | "all";
 
 export function ExportDataButton({
   type = "all",
   disabled,
+  userId,
 }: {
   type?: ExportType;
   disabled?: boolean;
+  userId?: string;
 }) {
   const [isExporting, setIsExporting] = useState(false);
 
@@ -35,8 +37,9 @@ export function ExportDataButton({
       let headers = "";
 
       if (type === "incomes" || type === "all") {
-        const { data: incomeData = [], success: successIncome } =
-          await getIncome();
+        const { data: incomeData = [], success: successIncome } = !userId
+          ? await getIncome()
+          : await getIncomesByUserId(userId);
 
         const incomes = successIncome ? incomeData : [];
 
@@ -52,7 +55,9 @@ export function ExportDataButton({
       }
 
       if (type === "costs" || type === "all") {
-        const { data: costData = [], success: successCost } = await getCosts();
+        const { data: costData = [], success: successCost } = !userId
+          ? await getCosts()
+          : await getCostsByUserId(userId);
 
         const costs = successCost ? costData : [];
 
@@ -68,8 +73,9 @@ export function ExportDataButton({
       }
 
       if (type === "expenses" || type === "all") {
-        const { data: expenseData = [], success: successExpense } =
-          await getExpense();
+        const { data: expenseData = [], success: successExpense } = !userId
+          ? await getExpense()
+          : await getExpensesByUserId(userId);
 
         const expenses = successExpense ? expenseData : [];
 
