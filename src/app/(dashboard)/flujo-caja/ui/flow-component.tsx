@@ -33,17 +33,7 @@ interface CashFlowComponentProps {
 }
 
 export const FlowComponent: FC<CashFlowComponentProps> = ({ cashFlowData }) => {
-  const mockData =
-    cashFlowData.length > 0
-      ? cashFlowData
-      : [
-          { date: "2023-01-01", balance: 1000 },
-          { date: "2023-01-15", balance: 1500 },
-          { date: "2023-02-01", balance: 1200 },
-          { date: "2023-02-15", balance: 2000 },
-          { date: "2023-03-01", balance: 1800 },
-          { date: "2023-03-15", balance: 2500 },
-        ];
+  const mockData = cashFlowData.length > 0 ? cashFlowData : [];
 
   return (
     <div className="grid gap-6">

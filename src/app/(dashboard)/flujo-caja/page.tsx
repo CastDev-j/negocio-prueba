@@ -108,24 +108,18 @@ export default async function CashFlowPage() {
   const displayData =
     cashFlowData.length > 0
       ? cashFlowData
-      : [
-          {
-            date: new Date("2023-01-01").toISOString(),
-            balance: 1000,
-            incomes: 1000,
+      : Array.from({ length: 3 }, (_, i) => {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          return {
+            date: date.toISOString(),
+            balance: 0,
+            incomes: 0,
             costs: 0,
             expenses: 0,
-            dailyBalance: 1000,
-          },
-          {
-            date: new Date("2023-01-15").toISOString(),
-            balance: 1500,
-            incomes: 500,
-            costs: 0,
-            expenses: 0,
-            dailyBalance: 500,
-          },
-        ];
+            dailyBalance: 0,
+          };
+        }).reverse();
 
   return (
     <div className="container mx-auto py-6">
