@@ -43,14 +43,14 @@ export const FlowComponent: FC<CashFlowComponentProps> = ({ cashFlowData }) => {
           <CardDescription>Evolución del saldo acumulado</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] w-full">
+          <div className="h-[400px] w-full ">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={mockData}
                 margin={{
                   top: 5,
                   right: 30,
-                  left: 20,
+                  left: 30,
                   bottom: 5,
                 }}
               >
