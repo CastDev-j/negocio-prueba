@@ -84,6 +84,39 @@ export const getExpense = async () => {
   }
 };
 
+export const getExpensesByUserId = async (userId: string) => {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("User not authenticated");
+    const { user } = session;
+    const { role } = user;
+
+    if (role !== "admin") throw new Error("User not authenticated");
+
+    const expences = await prisma.expense.findMany({
+      where: { userId },
+      orderBy: { date: "desc" },
+    });
+
+    return {
+      success: true,
+      message: "Expenses fetched successfully",
+      data: expences.map((expense) => {
+        return {
+          ...expense,
+          date: expense.date.toISOString().split("T")[0],
+        };
+      }),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error fetching expenses",
+      error: (error as Error).message,
+    };
+  }
+};
+
 export const addExpense = async (expenseData: ExpenseInput) => {
   try {
     const session = await auth();

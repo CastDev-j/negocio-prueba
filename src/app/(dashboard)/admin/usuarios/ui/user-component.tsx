@@ -1,10 +1,8 @@
 "use client";
 
-import { FC, useState } from "react";
-import type { ColumnDef } from "@tanstack/react-table";
-import { Trash2, Users, Shield, FileText, ArrowUpDown } from "lucide-react";
+import { FC, useEffect, useState } from "react";
+import { Users, Shield, FileText, PackageOpen } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,18 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DataTable } from "@/components/ui/data-table";
 import { ExportDataButton } from "@/components/export-data-button";
 import { toast } from "sonner";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Progress } from "@/components/ui/progress";
 import { $Enums } from "@/app/generated/prisma";
 import {
@@ -38,7 +27,16 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Session } from "next-auth";
-import { changeUserRole, deleteUser } from "@/app/actions/users/users";
+import { deleteUser } from "@/app/actions/users/users";
+import { CostItem, ExpenseItem, IncomeItem } from "@/interfaces/store";
+import { getIncomesByUserId } from "@/app/actions/expences/incomes";
+import { getCostsByUserId } from "@/app/actions/expences/costs";
+import { getExpensesByUserId } from "@/app/actions/expences/expences";
+import { IncomeTable } from "@/components/incomes-table";
+import { CostsTable } from "@/components/costs-table";
+import { ExpencesTable } from "@/components/expences-table";
+import { DataTableSkeleton } from "@/components/ui/skeleton-table";
+import { UsersTable } from "@/components/users-table";
 
 interface User {
   id: string;
@@ -52,11 +50,6 @@ interface UsersComponentProps {
   session: Session;
 }
 
-const roleEs = {
-  admin: "Administrador",
-  user: "Usuario",
-};
-
 export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
   const [activeTab, setActiveTab] = useState("ingresos");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,36 +57,11 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
-  const handleRoleChange = async (
-    email: string,
-    newRole: keyof typeof roleEs
-  ) => {
-    const { data, success } = await changeUserRole(
-      email,
-      newRole as $Enums.Role
-    );
+  const [incomes, setIncomes] = useState<IncomeItem[]>([]);
+  const [costs, setCosts] = useState<CostItem[]>([]);
+  const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
 
-    if (!success) {
-      toast.error("Error al cambiar rol", {
-        description: "No se pudo cambiar el rol del usuario.",
-        position: "top-right",
-      });
-      return;
-    }
-
-    const updatedUser = data;
-
-    if (updatedUser) {
-      toast.success("Rol actualizado", {
-        description: `El rol del usuario ${email} ha sido actualizado a ${roleEs[newRole]}`,
-        position: "top-right",
-      });
-    }
-
-    setIsSubmitting(false);
-    setSelectedUser(null);
-    setActiveTab("ingresos");
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDeleteUser = async () => {
     if (!userToDelete) return;
@@ -130,112 +98,56 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
     setSelectedUser(null);
   };
 
-  const columns: ColumnDef<User>[] = [
-    {
-      accessorKey: "name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="px-0"
-        >
-          Nombre
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <div
-          className="font-medium cursor-pointer hover:text-primary"
-          onClick={() => setSelectedUser(row.original)}
-        >
-          {row.getValue("name")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "email",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="px-0"
-        >
-          Correo
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-    },
-    {
-      accessorKey: "role",
-      header: "Rol",
-      cell: ({ row }) => {
-        const user = row.original;
-        return (
-          <Select
-            defaultValue={user.role}
-            disabled={session.user.email === user.email}
-            onValueChange={(value) =>
-              handleRoleChange(user.email, value as keyof typeof roleEs)
-            }
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Seleccionar rol" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Roles</SelectLabel>
-                <SelectItem value="admin">Administrador</SelectItem>
-                <SelectItem value="user">Usuario</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        );
-      },
-    },
-    {
-      id: "view-records",
-      header: "Registros",
-      cell: ({ row }) => {
-        const user = row.original;
-        return (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              setSelectedUser(user);
-              setActiveTab("ingresos");
-            }}
-          >
-            <FileText className="h-4 w-4 mr-2" />
-            Ver registros
-          </Button>
-        );
-      },
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => {
-        const user = row.original;
-        return (
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={
-              isSubmitting ||
-              session.user.email === user.email ||
-              user.role === "admin"
-            }
-            onClick={() => {
-              setUserToDelete(user.email.toLowerCase());
-              setShowDeleteDialog(true);
-            }}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        );
-      },
-    },
-  ];
+  useEffect(() => {
+    if (selectedUser) {
+      setIsLoading(true);
+      const fetchUserData = async () => {
+        const { data: userIncomes = [], success: successIncomes } =
+          await getIncomesByUserId(selectedUser.id);
+        const { data: userCosts = [], success: successCosts } =
+          await getCostsByUserId(selectedUser.id);
+        const { data: userExpenses = [], success: successExpenses } =
+          await getExpensesByUserId(selectedUser.id);
+
+        if (!successIncomes || !successCosts || !successExpenses) {
+          toast.error("Error al obtener los datos del usuario", {
+            description: "No se pudieron obtener los datos del usuario.",
+            position: "top-right",
+          });
+          return;
+        }
+
+        const formattedIncomes = userIncomes.map((income) => {
+          return {
+            ...income,
+            date: new Date(income.date),
+          };
+        });
+
+        const formattedCosts = userCosts.map((cost) => {
+          return {
+            ...cost,
+            date: new Date(cost.date),
+          };
+        });
+
+        const formattedExpenses = userExpenses.map((expense) => {
+          return {
+            ...expense,
+            date: new Date(expense.date),
+          };
+        });
+
+        setIncomes(formattedIncomes);
+        setCosts(formattedCosts);
+        setExpenses(formattedExpenses);
+
+        setIsLoading(false);
+      };
+
+      fetchUserData();
+    }
+  }, [selectedUser]);
 
   return (
     <div className="gap-6 flex flex-col w-full">
@@ -352,11 +264,15 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable
-            columns={columns}
-            data={users}
-            searchKey="name"
-            searchPlaceholder="Buscar por nombre..."
+          <UsersTable
+            isSubmitting={isSubmitting}
+            session={session}
+            setActiveTab={setActiveTab}
+            setIsSubmitting={setIsSubmitting}
+            setSelectedUser={setSelectedUser}
+            setShowDeleteDialog={setShowDeleteDialog}
+            setUserToDelete={setUserToDelete}
+            users={users}
           />
         </CardContent>
       </Card>
@@ -369,7 +285,7 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
             <TabsTrigger value="costos">Costos</TabsTrigger>
             <TabsTrigger value="gastos">Gastos</TabsTrigger>
           </TabsList>
-          <ExportDataButton type="all" />
+          <ExportDataButton type="all" disabled={!selectedUser} />
         </div>
 
         <TabsContent value="ingresos">
@@ -386,10 +302,21 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
             </CardHeader>
             <CardContent>
               {selectedUser ? (
-                <div>
-                  {/* Aquí iría la tabla de ingresos del usuario */}
-                  <p>Tabla de ingresos para {selectedUser.name}</p>
-                </div>
+                isLoading ? (
+                  <DataTableSkeleton />
+                ) : incomes.length > 0 ? (
+                  <IncomeTable incomes={incomes} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium text-muted-foreground">
+                      No hay ingresos registrados
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Aún no se han registrado ingresos para este usuario.
+                    </p>
+                  </div>
+                )
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <FileText className="h-12 w-12 text-muted-foreground mb-4" />
@@ -420,10 +347,21 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
             </CardHeader>
             <CardContent>
               {selectedUser ? (
-                <div>
-                  {/* Aquí iría la tabla de costos del usuario */}
-                  <p>Tabla de costos para {selectedUser.name}</p>
-                </div>
+                isLoading ? (
+                  <DataTableSkeleton />
+                ) : costs.length > 0 ? (
+                  <CostsTable costs={costs} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium text-muted-foreground">
+                      No hay costos registrados
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Aún no se han registrado costos para este usuario.
+                    </p>
+                  </div>
+                )
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <FileText className="h-12 w-12 text-muted-foreground mb-4" />
@@ -454,10 +392,21 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
             </CardHeader>
             <CardContent>
               {selectedUser ? (
-                <div>
-                  {/* Aquí iría la tabla de gastos del usuario */}
-                  <p>Tabla de gastos para {selectedUser.name}</p>
-                </div>
+                isLoading ? (
+                  <DataTableSkeleton />
+                ) : expenses.length > 0 ? (
+                  <ExpencesTable expenses={expenses} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium text-muted-foreground">
+                      No hay gastos registrados
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Aún no se han registrado gastros para este usuario.
+                    </p>
+                  </div>
+                )
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                   <FileText className="h-12 w-12 text-muted-foreground mb-4" />

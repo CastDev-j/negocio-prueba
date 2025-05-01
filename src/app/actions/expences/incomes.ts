@@ -85,6 +85,39 @@ export const getIncome = async () => {
   }
 };
 
+export const getIncomesByUserId = async (userId: string) => {
+  try {
+    const session = await auth();
+    if (!session) throw new Error("User not authenticated");
+    const { user } = session;
+    const { role } = user;
+
+    if (role !== "admin") throw new Error("User not authenticated");
+    
+    const incomes = await prisma.income.findMany({
+      where: { userId },
+      orderBy: { date: "desc" },
+    });
+
+    return {
+      success: true,
+      message: "Incomes fetched successfully",
+      data: incomes.map((income) => {
+        return {
+          ...income,
+          date: income.date.toISOString().split("T")[0],
+        };
+      }),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Error fetching incomes",
+      error: (error as Error).message,
+    };
+  }
+};
+
 export const addIncome = async (incomeData: IncomeInput) => {
   try {
     const session = await auth();

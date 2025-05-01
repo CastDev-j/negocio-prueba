@@ -10,7 +10,13 @@ import { getIncome } from "@/app/actions/expences/incomes";
 
 type ExportType = "incomes" | "costs" | "expenses" | "all";
 
-export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
+export function ExportDataButton({
+  type = "all",
+  disabled,
+}: {
+  type?: ExportType;
+  disabled?: boolean;
+}) {
   const [isExporting, setIsExporting] = useState(false);
 
   const exportToCSV = async () => {
@@ -131,7 +137,7 @@ export function ExportDataButton({ type = "all" }: { type?: ExportType }) {
       onClick={async () => {
         await exportToCSV();
       }}
-      disabled={isExporting}
+      disabled={isExporting || disabled}
     >
       <Download className="mr-2 h-4 w-4" />
       <span className="sm:flex hidden">Exportar a </span>
