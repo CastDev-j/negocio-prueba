@@ -16,7 +16,6 @@ import {
   User2,
   Users,
   FileSearch,
-  DownloadCloud,
 } from "lucide-react";
 
 import {
@@ -98,13 +97,7 @@ const adminRoutes = [
     href: "/admin/reportes",
     icon: FileSearch,
     category: "reportes",
-  },
-  {
-    title: "Exportar Datos",
-    href: "/admin/exportar",
-    icon: DownloadCloud,
-    category: "reportes",
-  },
+  }
 ];
 
 interface SidebarProps {

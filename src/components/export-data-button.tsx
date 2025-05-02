@@ -4,9 +4,21 @@ import { useState } from "react";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { getCosts, getCostsByUserId } from "@/app/actions/expences/costs";
-import { getExpense, getExpensesByUserId } from "@/app/actions/expences/expences";
-import { getIncome, getIncomesByUserId } from "@/app/actions/expences/incomes";
+import {
+  getAdminCosts,
+  getCosts,
+  getCostsByUserId,
+} from "@/app/actions/expences/costs";
+import {
+  getAdminExpenses,
+  getExpense,
+  getExpensesByUserId,
+} from "@/app/actions/expences/expences";
+import {
+  getAdminIncomes,
+  getIncome,
+  getIncomesByUserId,
+} from "@/app/actions/expences/incomes";
 
 type ExportType = "incomes" | "costs" | "expenses" | "all";
 
@@ -14,10 +26,12 @@ export function ExportDataButton({
   type = "all",
   disabled,
   userId,
+  exportAll = false,
 }: {
   type?: ExportType;
   disabled?: boolean;
   userId?: string;
+  exportAll?: boolean;
 }) {
   const [isExporting, setIsExporting] = useState(false);
 
@@ -37,9 +51,11 @@ export function ExportDataButton({
       let headers = "";
 
       if (type === "incomes" || type === "all") {
-        const { data: incomeData = [], success: successIncome } = !userId
-          ? await getIncome()
-          : await getIncomesByUserId(userId);
+        const { data: incomeData = [], success: successIncome } = exportAll
+          ? await getAdminIncomes()
+          : userId
+          ? await getIncomesByUserId(userId)
+          : await getIncome();
 
         const incomes = successIncome ? incomeData : [];
 
@@ -55,9 +71,11 @@ export function ExportDataButton({
       }
 
       if (type === "costs" || type === "all") {
-        const { data: costData = [], success: successCost } = !userId
-          ? await getCosts()
-          : await getCostsByUserId(userId);
+        const { data: costData = [], success: successCost } = exportAll
+          ? await getAdminCosts()
+          : userId
+          ? await getCostsByUserId(userId)
+          : await getCosts();
 
         const costs = successCost ? costData : [];
 
@@ -73,9 +91,11 @@ export function ExportDataButton({
       }
 
       if (type === "expenses" || type === "all") {
-        const { data: expenseData = [], success: successExpense } = !userId
-          ? await getExpense()
-          : await getExpensesByUserId(userId);
+        const { data: expenseData = [], success: successExpense } = exportAll
+          ? await getAdminExpenses()
+          : userId
+          ? await getExpensesByUserId(userId)
+          : await getExpense();
 
         const expenses = successExpense ? expenseData : [];
 
