@@ -27,13 +27,100 @@ import {
 } from "@/components/ui/table";
 import { FC } from "react";
 import { CashFlowData } from "@/interfaces/flow";
+import { CostItem, ExpenseItem, IncomeItem } from "@/interfaces/store";
 
 interface CashFlowComponentProps {
-  cashFlowData: CashFlowData[];
+  costs: IncomeItem[];
+  incomes: CostItem[];
+  expenses: ExpenseItem[];
 }
 
-export const FlowComponent: FC<CashFlowComponentProps> = ({ cashFlowData }) => {
-  const mockData = cashFlowData.length > 0 ? cashFlowData : [];
+export const FlowComponent: FC<CashFlowComponentProps> = ({
+  costs,
+  expenses,
+  incomes,
+}) => {
+  const dateMap = new Map<
+    string,
+    { incomes: number; costs: number; expenses: number; date: Date }
+  >();
+
+  incomes.forEach((income) => {
+    const dateStr = income.date.toISOString().split("T")[0];
+    if (!dateMap.has(dateStr)) {
+      dateMap.set(dateStr, {
+        incomes: 0,
+        costs: 0,
+        expenses: 0,
+        date: new Date(dateStr),
+      });
+    }
+    dateMap.get(dateStr)!.incomes += income.total;
+  });
+
+  costs.forEach((cost) => {
+    const dateStr = cost.date.toISOString().split("T")[0];
+    if (!dateMap.has(dateStr)) {
+      dateMap.set(dateStr, {
+        incomes: 0,
+        costs: 0,
+        expenses: 0,
+        date: new Date(dateStr),
+      });
+    }
+    dateMap.get(dateStr)!.costs += cost.total;
+  });
+
+  expenses.forEach((expense) => {
+    const dateStr = expense.date.toISOString().split("T")[0];
+    if (!dateMap.has(dateStr)) {
+      dateMap.set(dateStr, {
+        incomes: 0,
+        costs: 0,
+        expenses: 0,
+        date: new Date(dateStr),
+      });
+    }
+    dateMap.get(dateStr)!.expenses += expense.amount;
+  });
+
+  const sortedDates = Array.from(dateMap.entries()).sort(
+    ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
+  );
+
+  let accumulatedBalance = 0;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const cashFlowData: CashFlowData[] = sortedDates.map(([_, amounts]) => {
+    const dailyBalance = amounts.incomes - amounts.costs - amounts.expenses;
+    accumulatedBalance += dailyBalance;
+
+    return {
+      date: amounts.date.toISOString(),
+      incomes: amounts.incomes,
+      costs: amounts.costs,
+      expenses: amounts.expenses,
+      dailyBalance,
+      balance: accumulatedBalance,
+    };
+  });
+
+  const displayData =
+    cashFlowData.length > 0
+      ? cashFlowData
+      : Array.from({ length: 3 }, (_, i) => {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          return {
+            date: date.toISOString(),
+            balance: 0,
+            incomes: 0,
+            costs: 0,
+            expenses: 0,
+            dailyBalance: 0,
+          };
+        }).reverse();
+
+  const mockData = displayData || [];
 
   return (
     <div className="grid gap-6">

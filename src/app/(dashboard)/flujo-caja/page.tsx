@@ -4,7 +4,6 @@ import { CostItem, ExpenseItem, IncomeItem } from "@/interfaces/store";
 import { getIncome } from "@/app/actions/expences/incomes";
 import { getCosts } from "@/app/actions/expences/costs";
 import { getExpense } from "@/app/actions/expences/expences";
-import { CashFlowData } from "@/interfaces/flow";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -41,86 +40,7 @@ export default async function CashFlowPage() {
       }))
     : [];
 
-  const dateMap = new Map<
-    string,
-    { incomes: number; costs: number; expenses: number; date: Date }
-  >();
-
-  incomes.forEach((income) => {
-    const dateStr = income.date.toISOString().split("T")[0];
-    if (!dateMap.has(dateStr)) {
-      dateMap.set(dateStr, {
-        incomes: 0,
-        costs: 0,
-        expenses: 0,
-        date: new Date(dateStr),
-      });
-    }
-    dateMap.get(dateStr)!.incomes += income.total;
-  });
-
-  costs.forEach((cost) => {
-    const dateStr = cost.date.toISOString().split("T")[0];
-    if (!dateMap.has(dateStr)) {
-      dateMap.set(dateStr, {
-        incomes: 0,
-        costs: 0,
-        expenses: 0,
-        date: new Date(dateStr),
-      });
-    }
-    dateMap.get(dateStr)!.costs += cost.total;
-  });
-
-  expenses.forEach((expense) => {
-    const dateStr = expense.date.toISOString().split("T")[0];
-    if (!dateMap.has(dateStr)) {
-      dateMap.set(dateStr, {
-        incomes: 0,
-        costs: 0,
-        expenses: 0,
-        date: new Date(dateStr),
-      });
-    }
-    dateMap.get(dateStr)!.expenses += expense.amount;
-  });
-
-  const sortedDates = Array.from(dateMap.entries()).sort(
-    ([a], [b]) => new Date(a).getTime() - new Date(b).getTime()
-  );
-
-  let accumulatedBalance = 0;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const cashFlowData: CashFlowData[] = sortedDates.map(([_, amounts]) => {
-    const dailyBalance = amounts.incomes - amounts.costs - amounts.expenses;
-    accumulatedBalance += dailyBalance;
-
-    return {
-      date: amounts.date.toISOString(),
-      incomes: amounts.incomes,
-      costs: amounts.costs,
-      expenses: amounts.expenses,
-      dailyBalance,
-      balance: accumulatedBalance,
-    };
-  });
-
-  const displayData =
-    cashFlowData.length > 0
-      ? cashFlowData
-      : Array.from({ length: 3 }, (_, i) => {
-          const date = new Date();
-          date.setDate(date.getDate() - i);
-          return {
-            date: date.toISOString(),
-            balance: 0,
-            incomes: 0,
-            costs: 0,
-            expenses: 0,
-            dailyBalance: 0,
-          };
-        }).reverse();
-
+ 
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-8">
@@ -136,7 +56,7 @@ export default async function CashFlowPage() {
         <ExportDataButton type="all" />
       </div>
 
-      <FlowComponent cashFlowData={displayData} />
+      <FlowComponent costs={costs} incomes={incomes} expenses={expenses} />
     </div>
   );
 }

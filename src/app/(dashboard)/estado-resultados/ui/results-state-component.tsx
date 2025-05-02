@@ -7,21 +7,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CostItem, ExpenseItem, IncomeItem } from "@/interfaces/store";
 import { FC } from "react";
 
 interface ProfitLossPageProps {
-  totalIncomes: number;
-  totalCosts: number;
-  totalExpenses: number;
-  profit: number;
+  incomes: IncomeItem[];
+  costs: CostItem[];
+  expenses: ExpenseItem[];
 }
 
 export const ResultStateComponent: FC<ProfitLossPageProps> = ({
-  profit,
-  totalCosts,
-  totalExpenses,
-  totalIncomes,
+  incomes,
+  costs,
+  expenses,
 }) => {
+  const totalIncomes = incomes.reduce((total, income) => {
+    return total + income.total;
+  }, 0);
+
+  const totalCosts = costs.reduce((total, cost) => {
+    return total + cost.total;
+  }, 0);
+
+  const totalExpenses = expenses.reduce((total, expense) => {
+    return total + expense.amount;
+  }, 0);
+
+  const profit = totalIncomes - totalCosts - totalExpenses;
+
   const isProfitable = profit >= 0;
 
   return (

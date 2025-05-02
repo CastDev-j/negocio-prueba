@@ -1,7 +1,7 @@
 "use client";
 
 import { FC, useEffect, useState } from "react";
-import { Users, Shield, FileText, PackageOpen } from "lucide-react";
+import { Users, Shield, FileText, PackageOpen, Ellipsis } from "lucide-react";
 
 import {
   Card,
@@ -37,6 +37,19 @@ import { CostsTable } from "@/components/costs-table";
 import { ExpencesTable } from "@/components/expences-table";
 import { DataTableSkeleton } from "@/components/ui/skeleton-table";
 import { UsersTable } from "@/components/users-table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ResultStateComponent } from "@/app/(dashboard)/estado-resultados/ui/results-state-component";
+import { ResultStateLoading } from "@/app/(dashboard)/estado-resultados/ui/result-state-loading";
+import { FlowComponent } from "@/app/(dashboard)/flujo-caja/ui/flow-component";
+import FlowComponentLoading from "@/app/(dashboard)/flujo-caja/ui/flow-component-loading";
 
 interface User {
   id: string;
@@ -286,6 +299,26 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
             <TabsTrigger value="ingresos">Ingresos</TabsTrigger>
             <TabsTrigger value="costos">Costos</TabsTrigger>
             <TabsTrigger value="gastos">Gastos</TabsTrigger>
+            {/* Menú desplegable para reportes avanzados */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                  <Ellipsis className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuLabel>Reportes del Usuario</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => setActiveTab("estado-resultados")}
+                >
+                  Estado de Resultados
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab("flujo-caja")}>
+                  Flujo de Caja
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </TabsList>
           <ExportDataButton
             type="all"
@@ -419,6 +452,113 @@ export const UsersComponent: FC<UsersComponentProps> = ({ users, session }) => {
                     </h3>
                     <p className="text-sm text-muted-foreground mt-2">
                       Aún no se han registrado gastros para este usuario.
+                    </p>
+                  </div>
+                )
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium text-muted-foreground">
+                    No se ha seleccionado ningún usuario
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Haz clic en &quot;Ver registros&quot; para ver la
+                    información financiera de un usuario
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="estado-resultados">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {selectedUser
+                  ? `Estado de resultados de ${selectedUser.name}`
+                  : "Estado de resultados"}
+              </CardTitle>
+              <CardDescription>
+                {selectedUser
+                  ? "Estado de resultados del usuario seleccionado"
+                  : "Selecciona un usuario para ver su estado de resultados"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {selectedUser ? (
+                isLoading ? (
+                  <ResultStateLoading />
+                ) : [incomes, costs, incomes].some(
+                    (item) => item.length > 0
+                  ) ? (
+                  <ResultStateComponent
+                    incomes={incomes}
+                    costs={costs}
+                    expenses={expenses}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium text-muted-foreground">
+                      No hay suficiente información
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Aún no se han registrado datos para este usuario.
+                    </p>
+                  </div>
+                )
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <FileText className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium text-muted-foreground">
+                    No se ha seleccionado ningún usuario
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Haz clic en &quot;Ver registros&quot; para ver la
+                    información financiera de un usuario
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="flujo-caja">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {selectedUser
+                  ? `Flujo de caja de ${selectedUser.name}`
+                  : "Flujo de caja"}
+              </CardTitle>
+              <CardDescription>
+                {selectedUser
+                  ? "Flujo de caja del usuario seleccionado"
+                  : "Selecciona un usuario para ver su flujo de caja"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {selectedUser ? (
+                isLoading ? (
+                  <FlowComponentLoading />
+                ) : [incomes, costs, incomes].some(
+                    (item) => item.length > 0
+                  ) ? (
+                  <FlowComponent
+                    costs={costs}
+                    incomes={incomes}
+                    expenses={expenses}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <PackageOpen className="h-12 w-12 text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-medium text-muted-foreground">
+                      No hay suficiente información
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Aún no se ha registrado información suficiente para este
+                      usuario.
                     </p>
                   </div>
                 )

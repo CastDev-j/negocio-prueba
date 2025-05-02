@@ -40,20 +40,6 @@ export default async function ProfitLossPage() {
       }))
     : [];
 
-  const totalIncomes = incomes.reduce((total, income) => {
-    return total + income.total;
-  }, 0);
-
-  const totalCosts = costs.reduce((total, cost) => {
-    return total + cost.total;
-  }, 0);
-
-  const totalExpenses = expenses.reduce((total, expense) => {
-    return total + expense.amount;
-  }, 0);
-
-  const profit = totalIncomes - totalCosts - totalExpenses;
-
   return (
     <div className="container mx-auto py-6">
       <div className="flex justify-between items-center mb-8">
@@ -72,10 +58,9 @@ export default async function ProfitLossPage() {
       </div>
 
       <ResultStateComponent
-        profit={profit}
-        totalCosts={totalCosts}
-        totalExpenses={totalExpenses}
-        totalIncomes={totalIncomes}
+        incomes={incomes}
+        costs={costs}
+        expenses={expenses}
       />
     </div>
   );
