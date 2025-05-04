@@ -26,6 +26,15 @@ export default async function RootLayout({
         <main className="flex flex-col w-full p-4 justify-start">
           <CustomTrigger />
           {children}
+
+          <footer>
+            <div className="flex flex-col items-center justify-center w-full h-16">
+              <p className="text-sm text-neutral-500">
+                &copy; {new Date().getFullYear()} FinanzaPyme. Todos los
+                derechos reservados.
+              </p>
+            </div>
+          </footer>
         </main>
       </div>
     </SidebarProvider>

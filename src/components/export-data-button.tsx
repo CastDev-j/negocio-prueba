@@ -46,9 +46,11 @@ export function ExportDataButton({
         quantity: number;
         price: number;
         total: number;
+        userId?: string;
       }[] = [];
       let filename = "";
-      let headers = "";
+      let headers = exportAll ? "Usuario," : "";
+      headers += "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";
 
       if (type === "incomes" || type === "all") {
         const { data: incomeData = [], success: successIncome } = exportAll
@@ -60,14 +62,17 @@ export function ExportDataButton({
         const incomes = successIncome ? incomeData : [];
 
         const incomeDataFormatted = incomes.map((income) => ({
-          ...income,
-          date: new Date(income.date).toLocaleDateString(),
+          ...(exportAll && { userId: income.userId }),
           type: "Ingreso",
+          date: new Date(income.date).toLocaleDateString(),
+          concept: income.concept,
+          quantity: income.quantity,
+          price: income.price,
+          total: income.total,
         }));
         data = [...data, ...incomeDataFormatted];
         filename =
           type === "incomes" ? "ingresos.csv" : "datos_financieros.csv";
-        headers = "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";
       }
 
       if (type === "costs" || type === "all") {
@@ -80,14 +85,17 @@ export function ExportDataButton({
         const costs = successCost ? costData : [];
 
         const costDataFormatted = costs.map((cost) => ({
-          ...cost,
-          date: new Date(cost.date).toLocaleDateString(),
+          ...(exportAll && { userId: cost.userId }),
           type: "Costo",
+          date: new Date(cost.date).toLocaleDateString(),
+          concept: cost.concept,
+          quantity: cost.quantity,
+          price: cost.price,
+          total: cost.total,
         }));
         data = [...data, ...costDataFormatted];
         filename =
           type === "costs" ? "costos.csv" : filename || "datos_financieros.csv";
-        headers = headers || "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";
       }
 
       if (type === "expenses" || type === "all") {
@@ -100,9 +108,10 @@ export function ExportDataButton({
         const expenses = successExpense ? expenseData : [];
 
         const expenseDataFormatted = expenses.map((expense) => ({
-          ...expense,
-          date: new Date(expense.date).toLocaleDateString(),
+          ...(exportAll && { userId: expense.userId }),
           type: "Gasto",
+          date: new Date(expense.date).toLocaleDateString(),
+          concept: expense.concept,
           quantity: 1,
           price: expense.amount,
           total: expense.amount,
@@ -112,7 +121,6 @@ export function ExportDataButton({
           type === "expenses"
             ? "gastos.csv"
             : filename || "datos_financieros.csv";
-        headers = headers || "Tipo,Fecha,Concepto,Cantidad,Precio,Total\n";
       }
 
       // Crear el contenido del CSV
@@ -120,6 +128,7 @@ export function ExportDataButton({
 
       data.forEach((item) => {
         const row = [
+          ...(exportAll ? [item.userId] : []),
           item.type,
           item.date,
           item.concept,

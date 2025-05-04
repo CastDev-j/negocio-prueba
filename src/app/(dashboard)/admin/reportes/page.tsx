@@ -1,7 +1,7 @@
-import { getUsers } from "@/app/actions/users/users";
-import { UsersComponent } from "./ui/user-component";
-import { Metadata } from "next";
 import { auth } from "@/auth";
+import { ReportComponent } from "./ui/report-component";
+import { Metadata } from "next";
+import { getUsers } from "@/app/actions/users/users";
 
 export const metadata: Metadata = {
   title: "FinanzaPyme - Reportes Avanzados",
@@ -27,7 +27,7 @@ export default async function UserPage() {
         </p>
       </div>
 
-      <UsersComponent users={users!} session={session!} />
+      <ReportComponent users={users!} session={session!}/>
     </div>
   );
 }
