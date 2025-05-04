@@ -12,6 +12,7 @@ import {
   LineChart,
   ShoppingCart,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -26,83 +27,96 @@ export default function Home() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
-            <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
-              <DollarSign className="size-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Registra tus ventas</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Registra todas tus ventas con detalle de cantidad, precio y fecha.
-            </p>
-          </CardContent>
-        </Card>
+        <Link href={"/ingresos"}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
+              <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
+                <DollarSign className="size-4" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Registra tus ventas</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Registra todas tus ventas con detalle de cantidad, precio y
+                fecha.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Costos</CardTitle>
-            <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
-              <ShoppingCart className="size-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Controla tus compras</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Registra las compras a proveedores y materiales para producción.
-            </p>
-          </CardContent>
-        </Card>
+        <Link href={"/costos"}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Costos</CardTitle>
+              <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
+                <ShoppingCart className="size-4" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Controla tus compras</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Registra las compras a proveedores y materiales para producción.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gastos</CardTitle>
-            <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
-              <CreditCard className="size-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Administra tus gastos</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Registra gastos operativos y financieros para un mejor control.
-            </p>
-          </CardContent>
-        </Card>
+        <Link href={"/gastos"}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Gastos</CardTitle>
+              <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
+                <CreditCard className="size-4" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Administra tus gastos</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Registra gastos operativos y financieros para un mejor control.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Estado de Resultados
-            </CardTitle>
-            <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
-              <BarChart3 className="size-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Analiza tu rentabilidad</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Visualiza tus ingresos, costos, gastos y ganancias en un solo
-              lugar.
-            </p>
-          </CardContent>
-        </Card>
+        <Link href={"/estado-resultados"}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Estado de Resultados
+              </CardTitle>
+              <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
+                <BarChart3 className="size-4" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Analiza tu rentabilidad</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Visualiza tus ingresos, costos, gastos y ganancias en un solo
+                lugar.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Flujo de Caja</CardTitle>
-            <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
-              <LineChart className="size-4" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Monitorea tu liquidez</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Visualiza el movimiento de tu dinero a lo largo del tiempo.
-            </p>
-          </CardContent>
-        </Card>
+        <Link href={"/flujo-caja"}>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Flujo de Caja
+              </CardTitle>
+              <div className="size-6 bg-primary text-primary-foreground rounded flex items-center justify-center">
+                <LineChart className="size-4" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">Monitorea tu liquidez</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Visualiza el movimiento de tu dinero a lo largo del tiempo.
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="mt-10">
