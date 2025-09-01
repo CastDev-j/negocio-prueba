@@ -206,15 +206,6 @@ export function AppSidebar({ session }: SidebarProps) {
                   <>
                     <DropdownMenuItem>
                       <Button
-                        variant="ghost"
-                        className="flex justify-start w-full"
-                      >
-                        <User2 className="mr-2 h-4 w-4" />
-                        <span>Cuenta</span>
-                      </Button>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Button
                         onClick={() => signOut()}
                         variant="ghost"
                         className="flex justify-start w-full"
